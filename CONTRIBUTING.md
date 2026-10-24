@@ -128,12 +128,8 @@ Cap the subject line at 50 characters. Wrap the body at 72 columns. Both are
 tighter than the 80 column rule for Markdown, because git indents commit
 messages when it displays them.
 
-Close every message with the co-author trailer, exactly as written here and
-with no model name:
-
-```text
-Co-Authored-By: Claude <noreply@anthropic.com>
-```
+When an AI assistant wrote part of a change, credit it with a `Co-Authored-By`
+trailer at the end of the message.
 
 [deferred]: docs/design/deferred-decisions.md
 [index]: docs/index.md
