@@ -12,7 +12,7 @@ import (
 func newPull(d deps, opts *options) *cobra.Command {
 	return &cobra.Command{
 		Use:   "pull [path...]",
-		Short: "Bring changes made in a target back into the repository",
+		Short: "Bring owned keys changed in merge targets back into the repository",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runPull(cmd, d, opts, args)
 		},
