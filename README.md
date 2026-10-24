@@ -100,9 +100,10 @@ target = "~/.claude-work/.claude.json"
 | `teire apply`        | Shows the plan, asks once, then writes. `--yes` skips the question. |
 | `teire adopt <path>` | Moves an existing file into its package and links it back.          |
 | `teire init --host`  | Names this machine, for the host sections in `teire.toml`.          |
+| `teire prune`        | Removes all but the 10 newest backups. `--keep N` changes the 10.   |
 
 Every overwrite first saves the old target under
-`~/.local/state/teire/backups/`.
+`~/.local/state/teire/backups/`, and `teire prune` removes the old ones.
 
 ## Status
 

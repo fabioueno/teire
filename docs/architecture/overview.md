@@ -124,7 +124,8 @@ target, or skip it. Without a terminal, `apply` skips each conflict, applies
 the rest, and exits with 2.
 
 Before Teire overwrites or merges into a target, it saves the old target in
-`$XDG_STATE_HOME/teire/backups/<timestamp>/`.
+`$XDG_STATE_HOME/teire/backups/<timestamp>/`. Nothing removes a backup except
+`prune`.
 
 ## Commands
 
@@ -139,6 +140,9 @@ Before Teire overwrites or merges into a target, it saves the old target in
 - `adopt <path>` moves a plain file into the source folder of the deepest
   `files` package whose target holds it, then links the file back.
 - `init --host <name>` writes the host file.
+- `prune [--keep N]` removes all but the `N` newest backup folders, 10 by
+  default. It orders them by name, leaves any entry whose name is not a backup
+  timestamp, and needs neither `teire.toml` nor a repository.
 
 Teire finds the repository from `--repo`, or else from the nearest folder at or
 above the current one that holds `teire.toml`.

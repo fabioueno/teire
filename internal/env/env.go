@@ -9,6 +9,9 @@ import (
 	"time"
 )
 
+// BackupLayout is the time layout of a backup folder name. It sorts by time.
+const BackupLayout = "20060102T150405Z"
+
 type Env struct {
 	Home      string
 	Repo      string
@@ -50,6 +53,10 @@ func (e Env) HostFile() string {
 	return filepath.Join(e.ConfigDir, "host")
 }
 
+func (e Env) BackupsDir() string {
+	return filepath.Join(e.StateDir, "backups")
+}
+
 func (e Env) Backups(now time.Time) string {
-	return filepath.Join(e.StateDir, "backups", now.UTC().Format("20060102T150405Z"))
+	return filepath.Join(e.BackupsDir(), now.UTC().Format(BackupLayout))
 }
