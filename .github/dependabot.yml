@@ -1,0 +1,43 @@
+version: 2
+
+updates:
+  - package-ecosystem: "github-actions"
+    open-pull-requests-limit: 3
+    directory: "/"
+
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "07:00"
+
+    commit-message:
+      prefix: "ci"
+
+    cooldown:
+      default-days: 3
+
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "gomod"
+    open-pull-requests-limit: 3
+    directory: "/"
+
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+      time: "07:00"
+
+    commit-message:
+      prefix: "deps"
+
+    cooldown:
+      default-days: 3
+
+    groups:
+      non-major:
+        update-types:
+          - "minor"
+          - "patch"
