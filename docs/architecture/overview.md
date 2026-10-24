@@ -9,16 +9,25 @@ is also the name of its source folder, unless the package sets `source`.
 Teire knows the target and strategy of common packages. A folder with one of
 these names is a package without an entry in `teire.toml`:
 
-| Package    | Target              | Strategy |
-| ---------- | ------------------- | -------- |
-| `claude`   | `~/.claude`         | `files`  |
-| `ghostty`  | `~/.config/ghostty` | `files`  |
-| `git`      | `~`                 | `files`  |
-| `mise`     | `~/.config/mise`    | `files`  |
-| `nvim`     | `~/.config/nvim`    | `folder` |
-| `starship` | `~/.config`         | `files`  |
-| `zed`      | `~/.config/zed`     | `files`  |
-| `zsh`      | `~`                 | `files`  |
+| Package     | Target                | Strategy |
+| ----------- | --------------------- | -------- |
+| `alacritty` | `~/.config/alacritty` | `files`  |
+| `bash`      | `~`                   | `files`  |
+| `claude`    | `~/.claude`           | `files`  |
+| `fish`      | `~/.config/fish`      | `files`  |
+| `gh`        | `~/.config/gh`        | `files`  |
+| `ghostty`   | `~/.config/ghostty`   | `files`  |
+| `git`       | `~`                   | `files`  |
+| `helix`     | `~/.config/helix`     | `files`  |
+| `kitty`     | `~/.config/kitty`     | `files`  |
+| `mise`      | `~/.config/mise`      | `files`  |
+| `nvim`      | `~/.config/nvim`      | `folder` |
+| `starship`  | `~/.config`           | `files`  |
+| `tmux`      | `~/.config/tmux`      | `files`  |
+| `vim`       | `~`                   | `files`  |
+| `wezterm`   | `~/.config/wezterm`   | `files`  |
+| `zed`       | `~/.config/zed`       | `files`  |
+| `zsh`       | `~`                   | `files`  |
 
 Any other folder is a package only when `teire.toml` declares it, and it then
 defaults to `~/.config/<name>` with `files`. An entry changes only what differs

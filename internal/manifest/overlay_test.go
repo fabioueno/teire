@@ -59,7 +59,7 @@ func TestWithHost(t *testing.T) {
 func TestWithHostAddsAPackage(t *testing.T) {
 	t.Parallel()
 
-	got := withHost(loadManifest(t, "resolve/host-adds-package.toml"), "work", repoWith("tmux"))
+	got := withHost(loadManifest(t, "resolve/host-adds-package.toml"), "work", repoWith("myapp"))
 
-	assert.Equal(t, map[string]Package{"tmux": {}}, got)
+	assert.Equal(t, map[string]Package{"myapp": {}}, got)
 }

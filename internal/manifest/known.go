@@ -9,14 +9,23 @@ import (
 // repository needs no entry in teire.toml. Any other package must be
 // declared, and defaults to ~/.config/<name> with the files strategy.
 var known = map[string]Package{
-	"claude":   {Target: "~/.claude", Strategy: Files},
-	"ghostty":  {Target: "~/.config/ghostty", Strategy: Files},
-	"git":      {Target: "~", Strategy: Files},
-	"mise":     {Target: "~/.config/mise", Strategy: Files},
-	"nvim":     {Target: "~/.config/nvim", Strategy: Folder},
-	"starship": {Target: "~/.config", Strategy: Files},
-	"zed":      {Target: "~/.config/zed", Strategy: Files},
-	"zsh":      {Target: "~", Strategy: Files},
+	"alacritty": {Target: "~/.config/alacritty", Strategy: Files},
+	"bash":      {Target: "~", Strategy: Files},
+	"claude":    {Target: "~/.claude", Strategy: Files},
+	"fish":      {Target: "~/.config/fish", Strategy: Files},
+	"gh":        {Target: "~/.config/gh", Strategy: Files},
+	"ghostty":   {Target: "~/.config/ghostty", Strategy: Files},
+	"git":       {Target: "~", Strategy: Files},
+	"helix":     {Target: "~/.config/helix", Strategy: Files},
+	"kitty":     {Target: "~/.config/kitty", Strategy: Files},
+	"mise":      {Target: "~/.config/mise", Strategy: Files},
+	"nvim":      {Target: "~/.config/nvim", Strategy: Folder},
+	"starship":  {Target: "~/.config", Strategy: Files},
+	"tmux":      {Target: "~/.config/tmux", Strategy: Files},
+	"vim":       {Target: "~", Strategy: Files},
+	"wezterm":   {Target: "~/.config/wezterm", Strategy: Files},
+	"zed":       {Target: "~/.config/zed", Strategy: Files},
+	"zsh":       {Target: "~", Strategy: Files},
 }
 
 func defaultsFor(name string) Package {

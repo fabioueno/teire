@@ -17,7 +17,7 @@ func TestDefaultsFor(t *testing.T) {
 		{name: "zsh", want: Package{Target: "~", Strategy: Files}},
 		{name: "nvim", want: Package{Target: "~/.config/nvim", Strategy: Folder}},
 		{name: "starship", want: Package{Target: "~/.config", Strategy: Files}},
-		{name: "tmux", want: Package{Target: "~/.config/tmux", Strategy: Files}},
+		{name: "myapp", want: Package{Target: "~/.config/myapp", Strategy: Files}},
 	}
 
 	for _, tc := range tests {
@@ -51,7 +51,7 @@ func TestDiscover(t *testing.T) {
 		},
 		{
 			name:    "an unknown folder is left alone",
-			folders: []string{"tmux"},
+			folders: []string{"myapp"},
 			want:    map[string]Package{},
 		},
 		{

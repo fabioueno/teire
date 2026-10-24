@@ -20,7 +20,7 @@ var repo = fstest.MapFS{
 	"nvim/init.lua":          {Data: []byte("")},
 	"nvim/lua/plugins.lua":   {Data: []byte("")},
 	"starship/starship.toml": {Data: []byte("")},
-	"tmux/tmux.conf":         {Data: []byte("")},
+	"myapp/config.toml":      {Data: []byte("")},
 }
 
 func TestResolve(t *testing.T) {
@@ -59,9 +59,9 @@ func TestResolve(t *testing.T) {
 			name:     "host adds a package",
 			manifest: "resolve/host-adds-package.toml",
 			host:     "work",
-			folders:  []string{"tmux"},
+			folders:  []string{"myapp"},
 			want: []Target{
-				{Package: "tmux", Source: "tmux/tmux.conf", Path: home + "/.config/tmux/tmux.conf", Strategy: Files},
+				{Package: "myapp", Source: "myapp/config.toml", Path: home + "/.config/myapp/config.toml", Strategy: Files},
 			},
 		},
 		{
@@ -103,14 +103,14 @@ func TestResolve(t *testing.T) {
 		{
 			name:     "an unknown folder needs an entry",
 			manifest: "resolve/empty.toml",
-			folders:  []string{"tmux"},
+			folders:  []string{"myapp"},
 		},
 		{
 			name:     "a declared unknown package goes below ~/.config",
 			manifest: "resolve/unknown-package.toml",
-			folders:  []string{"tmux"},
+			folders:  []string{"myapp"},
 			want: []Target{
-				{Package: "tmux", Source: "tmux/tmux.conf", Path: home + "/.config/tmux/tmux.conf", Strategy: Files},
+				{Package: "myapp", Source: "myapp/config.toml", Path: home + "/.config/myapp/config.toml", Strategy: Files},
 			},
 		},
 	}
