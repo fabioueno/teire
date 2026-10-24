@@ -34,6 +34,7 @@ type Resolver func(Conflict) (Choice, error)
 type Result struct {
 	Skipped int
 	Missing []string
+	Moved   map[string][]string
 	NotKept map[string][]string
 }
 
@@ -45,7 +46,7 @@ func Apply(e env.Env, p Plan, st state.State, resolve Resolver, now time.Time) (
 		next.Targets = map[string]state.Entry{}
 	}
 
-	result := Result{NotKept: map[string][]string{}}
+	result := Result{Moved: map[string][]string{}, NotKept: map[string][]string{}}
 	backups := e.Backups(now)
 
 	for _, item := range p.Items {
@@ -139,13 +140,18 @@ func applyMerge(item Item, next state.State, result *Result, resolve Resolver, b
 			return err
 		}
 
-		notKept, err := strategy.ApplyMerge(item.Path, changes)
+		merged, err := strategy.ApplyMerge(item.Path, changes)
 		if err != nil {
 			return err
 		}
 
-		if len(notKept) > 0 {
-			result.NotKept[item.Path] = notKept
+		if len(merged.NotKept) > 0 {
+			result.NotKept[item.Path] = merged.NotKept
+		}
+
+		if len(merged.Moved) > 0 {
+			result.Moved[item.Path] = merged.Moved
+			keepLastHash(changes, merged.Moved)
 		}
 	}
 
@@ -164,4 +170,14 @@ func writes(changes []strategy.Change) bool {
 	return slices.ContainsFunc(changes, func(c strategy.Change) bool {
 		return c.Action == strategy.Set || c.Action == strategy.Delete
 	})
+}
+
+// keepLastHash marks the paths a merge left alone as drift, so state keeps
+// the hash from the last apply and the next plan shows them again.
+func keepLastHash(changes []strategy.Change, moved []string) {
+	for i, c := range changes {
+		if slices.Contains(moved, c.Path) {
+			changes[i].Action = strategy.Drift
+		}
+	}
 }

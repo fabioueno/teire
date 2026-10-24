@@ -112,6 +112,11 @@ func report(w io.Writer, r engine.Result, home string) error {
 		fmt.Fprintf(&b, "%s does not exist yet; start its program once, then run apply again.\n", engine.ShortPath(path, home))
 	}
 
+	for _, path := range slices.Sorted(maps.Keys(r.Moved)) {
+		fmt.Fprintf(&b, "%s: %s changed since the plan and was left alone; run plan again.\n",
+			engine.ShortPath(path, home), strings.Join(r.Moved[path], ", "))
+	}
+
 	for _, path := range slices.Sorted(maps.Keys(r.NotKept)) {
 		fmt.Fprintf(&b, "%s: %s did not stay after the write; another program may have written the file.\n",
 			engine.ShortPath(path, home), strings.Join(r.NotKept[path], ", "))

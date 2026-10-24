@@ -15,42 +15,82 @@ import (
 
 var ErrTargetMissing = errors.New("target does not exist")
 
-// ApplyMerge writes the set and delete changes into the target file and
-// returns the owned paths whose value did not stay after the write. It reads
+// MergeResult lists the owned paths that a merge did not settle. Moved paths
+// changed in the target after the plan, so the merge left them alone. NotKept
+// paths were written but read back with another value.
+type MergeResult struct {
+	Moved   []string
+	NotKept []string
+}
+
+// ApplyMerge writes the set and delete changes into the target file. It reads
 // the target again first, so the keys another program wrote since the plan
-// stay as they are.
-func ApplyMerge(path string, changes []Change) ([]string, error) {
+// stay as they are, and an owned value that changed since the plan is left
+// for the next plan to show.
+func ApplyMerge(path string, changes []Change) (MergeResult, error) {
 	info, err := os.Stat(path)
 	if errors.Is(err, fs.ErrNotExist) {
-		return nil, fmt.Errorf("%s: %w", path, ErrTargetMissing)
+		return MergeResult{}, fmt.Errorf("%s: %w", path, ErrTargetMissing)
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("stat %s: %w", path, err)
+		return MergeResult{}, fmt.Errorf("stat %s: %w", path, err)
 	}
 
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("read %s: %w", path, err)
+		return MergeResult{}, fmt.Errorf("read %s: %w", path, err)
 	}
 
-	out, err := applyChanges(data, changes)
+	applied, moved := splitMoved(data, changes)
+
+	out, err := applyChanges(data, applied)
 	if err != nil {
-		return nil, fmt.Errorf("merge into %s: %w", path, err)
+		return MergeResult{}, fmt.Errorf("merge into %s: %w", path, err)
 	}
 
 	if !bytes.Equal(out, data) {
 		if err := fsx.WriteFileAtomic(path, out, info.Mode().Perm()); err != nil {
-			return nil, err
+			return MergeResult{}, err
 		}
 	}
 
 	written, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("read %s again: %w", path, err)
+		return MergeResult{}, fmt.Errorf("read %s again: %w", path, err)
 	}
 
-	return notKept(written, changes), nil
+	return MergeResult{Moved: moved, NotKept: notKept(written, applied)}, nil
+}
+
+// splitMoved separates the writes whose target value is still the one the
+// plan saw from those whose value changed since.
+func splitMoved(data []byte, changes []Change) ([]Change, []string) {
+	applied := make([]Change, 0, len(changes))
+	var moved []string
+
+	for _, c := range changes {
+		switch c.Action {
+		case Set, Delete:
+			if hashValue(gjson.GetBytes(data, c.Path)) != plannedHash(c) {
+				moved = append(moved, c.Path)
+				continue
+			}
+		case Unchanged, Release, Drift, Conflict:
+		}
+
+		applied = append(applied, c)
+	}
+
+	return applied, moved
+}
+
+func plannedHash(c Change) string {
+	if c.Target == "" {
+		return ""
+	}
+
+	return hashRaw(c.Target)
 }
 
 func applyChanges(data []byte, changes []Change) ([]byte, error) {

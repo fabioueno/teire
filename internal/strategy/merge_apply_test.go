@@ -43,9 +43,10 @@ func TestApplyMerge(t *testing.T) {
 			changes, err := PlanMerge(fixture(t, "source.json"), fixture(t, tc.target), tc.own, tc.last)
 			require.NoError(t, err)
 
-			notKept, err := ApplyMerge(path, changes)
+			merged, err := ApplyMerge(path, changes)
 			require.NoError(t, err)
-			assert.Empty(t, notKept)
+			assert.Empty(t, merged.NotKept)
+			assert.Empty(t, merged.Moved)
 
 			got, err := os.ReadFile(path)
 			require.NoError(t, err)
@@ -85,4 +86,44 @@ func TestNotKeptReportsValuesAnotherWriterReplaced(t *testing.T) {
 	})
 
 	assert.Equal(t, []string{notes, "mcpServers.github"}, got)
+}
+
+func TestApplyMergeLeavesValuesThatMovedSincePlan(t *testing.T) {
+	t.Parallel()
+
+	applied := map[string]string{notes: hashAt(t, "source.json", notes)}
+
+	tests := []struct {
+		name    string
+		planned string
+		own     []string
+		last    map[string]string
+		now     string
+	}{
+		{name: "a set whose path appeared since", planned: "target-without.json", own: []string{notes}, now: "target-edited.json"},
+		{name: "a delete whose value was edited since", planned: "target-same.json", last: applied, now: "target-edited.json"},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			changes, err := PlanMerge(fixture(t, "source.json"), fixture(t, tc.planned), tc.own, tc.last)
+			require.NoError(t, err)
+			require.Len(t, changes, 1)
+
+			path := filepath.Join(t.TempDir(), ".claude.json")
+			require.NoError(t, os.WriteFile(path, fixture(t, tc.now), 0o600))
+
+			merged, err := ApplyMerge(path, changes)
+
+			require.NoError(t, err)
+			assert.Equal(t, []string{notes}, merged.Moved)
+			assert.Empty(t, merged.NotKept)
+
+			got, err := os.ReadFile(path)
+			require.NoError(t, err)
+			assert.Equal(t, string(fixture(t, tc.now)), string(got), "the file is left as the other writer left it")
+		})
+	}
 }

@@ -1,10 +1,12 @@
 package cli
 
 import (
+	"bytes"
 	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/fabioueno/teire/internal/engine"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/tidwall/gjson"
@@ -233,4 +235,15 @@ func TestApplyRecordsTargetsAlreadyInPlace(t *testing.T) {
 	out, err = h.run("plan")
 	assert.Equal(t, 1, exitCode(t, err))
 	assert.Contains(t, out, "(no longer managed)\n  remove    ~/.config/nvim\n")
+}
+
+func TestReportNamesValuesThatMovedSincePlan(t *testing.T) {
+	t.Parallel()
+
+	var out bytes.Buffer
+	r := engine.Result{Moved: map[string][]string{"/Users/test/.claude.json": {"mcpServers.notes"}}}
+
+	require.NoError(t, report(&out, r, "/Users/test"))
+
+	assert.Contains(t, out.String(), "~/.claude.json: mcpServers.notes changed since the plan and was left alone; run plan again.\n")
 }

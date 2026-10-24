@@ -141,3 +141,20 @@ func TestApplyForgetsRemovedEntries(t *testing.T) {
 	_, err = os.Lstat(w.home(".zshrc"))
 	assert.ErrorIs(t, err, os.ErrNotExist)
 }
+
+func TestApplyLeavesAMergedValueThatMovedSincePlan(t *testing.T) {
+	t.Parallel()
+
+	w := newWorld(t)
+	p, err := Build(w.env, w.targets(), emptyState())
+	require.NoError(t, err)
+
+	w.copyFile("files/claude-edited.json", w.home(".claude.json"))
+
+	next, result, err := Apply(w.env, p, emptyState(), skip, now)
+
+	require.NoError(t, err)
+	assert.Equal(t, map[string][]string{w.home(".claude.json"): {"mcpServers.notes"}}, result.Moved)
+	assert.Equal(t, "https://notes.example/mcp?debug=1", gjson.Get(w.read(w.home(".claude.json")), "mcpServers.notes.url").String())
+	assert.NotContains(t, next.Targets, w.home(".claude.json"), "nothing is recorded for a value teire did not write")
+}

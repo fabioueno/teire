@@ -80,6 +80,9 @@ such as the history and caches in `~/.claude`, stays out of the repository.
   new value goes in compact, at the end of its object. Claude Code formats
   the file again on its next write.
 - It keeps the file mode, and replaces the file with an atomic rename.
+- It writes an owned path only while the target still holds the value that the
+  plan saw. A value that changed between the plan and the apply is left alone,
+  and the next plan shows it again.
 - After the write, it reads the file again and reports each owned value that
   did not stay. A running Claude Code session keeps the keys that Teire
   writes: its next rewrite of `.claude.json` carries them, so a merge does not
