@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/tidwall/sjson"
-
 	"github.com/fabioueno/teire/internal/fsx"
 )
 
@@ -25,7 +23,7 @@ func PullMerge(source string, changes []Change) error {
 
 	out := data
 	for _, c := range changes {
-		out, err = sjson.SetRawBytes(out, c.Path, compact(c.Target))
+		out, err = setPath(out, c.Path, compact(c.Target))
 		if err != nil {
 			return fmt.Errorf("pull into %s: path %q: %w", source, c.Path, err)
 		}

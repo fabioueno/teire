@@ -32,3 +32,19 @@ func TestPullMergeWritesTheTargetValueAndKeepsTheRest(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, Unchanged, again[0].Action, "the source now holds the target value")
 }
+
+func TestPullMergeKeepsTheCommentsAroundAJSONCValue(t *testing.T) {
+	t.Parallel()
+
+	path := filepath.Join(t.TempDir(), "settings.json")
+	require.NoError(t, os.WriteFile(path, fixture(t, "jsonc-source.jsonc"), 0o600))
+
+	last := map[string]string{jsoncNotes: hashAt(t, "jsonc-source.jsonc", jsoncNotes)}
+	changes, err := PlanMerge(fixture(t, "jsonc-source.jsonc"), fixture(t, "jsonc-target-drifted.jsonc"), []string{jsoncNotes}, last)
+	require.NoError(t, err)
+	require.Equal(t, Drift, changes[0].Action)
+
+	require.NoError(t, PullMerge(path, changes))
+
+	assert.Equal(t, string(fixture(t, "jsonc-pulled-source.jsonc")), readFile(t, path))
+}

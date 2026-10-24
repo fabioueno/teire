@@ -92,6 +92,13 @@ such as the history and caches in `~/.claude`, stays out of the repository.
 - It sets and deletes owned paths with `sjson`, and keeps all other bytes. A
   new value goes in compact, at the end of its object. Claude Code formats
   the file again on its next write.
+- It does the same for JSONC, the JSON with comments and trailing commas that
+  editors such as Zed and VS Code keep their settings in, with `hujson`. The
+  source may be JSONC too. Comments and trailing commas outside the owned
+  path stay. A removed value takes the comment above it, and the comments
+  inside a source value do not reach the target.
+- It hashes an owned value as plain compact JSON, so a comment or a change of
+  formatting does not change the hash.
 - It keeps the file mode, and replaces the file with an atomic rename.
 - It writes an owned path only while the target still holds the value that the
   plan saw. A value that changed between the plan and the apply is left alone,
@@ -156,13 +163,15 @@ Before Teire overwrites or merges into a target, it saves the old target in
   change, it still records the targets in place, so a later removal knows which
   links Teire made.
 - `pull [path...]` writes the owned paths that drifted in `merge` targets back
-  into the repository, without a question, because git tracks the repository.
-  It writes the target value of each drifted path into the source file with
-  `sjson`, keeps every other byte, and records the new value in state. It
-  leaves a path that both sides changed, and reports it. With no arguments it
-  pulls every `merge` target; with paths it pulls only those, and reports a
-  path that has nothing to pull. A path that is not a managed target is an
-  error. Before it overwrites a source, it saves the old source in the backups.
+  into the repository, without a question, because git tracks the repository. It
+  writes the target value of each drifted path into the source file, the way
+  `merge` writes a target: compact, with every other byte kept, and with the
+  comments inside the old value dropped in a JSONC source. It records the new
+  value in state. It leaves a path that both sides changed, and reports it. With
+  no arguments it pulls every `merge` target; with paths it pulls only those,
+  and reports a path that has nothing to pull. A path that is not a managed
+  target is an error. Before it overwrites a source, it saves the old source in
+  the backups.
 - `adopt <path>` moves a plain file into the source folder of the deepest
   `files` package whose target holds it, then links the file back.
 - `init --host <name>` writes the host file.

@@ -1,0 +1,11 @@
+// Servers owned by teire.
+{
+  /* the notes server */
+  "context_servers": {
+    "notes": {"url":"https://notes.example/v2","enabled":true},
+  },
+  "projects": {
+    "a.b":   { "trusted": true, },
+    "x/y~z": { "trusted": true },
+  },
+}
