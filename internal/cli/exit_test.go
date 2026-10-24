@@ -19,7 +19,7 @@ func TestExitCode(t *testing.T) {
 	}{
 		{name: "plain error", err: errors.New("boom"), wantCode: 1, wantShow: true},
 		{name: "silent exit", err: &exitError{code: 2}, wantCode: 2, wantShow: false},
-		{name: "exit with a message", err: &exitError{code: 2, err: errors.New("1 conflicts left")}, wantCode: 2, wantShow: true},
+		{name: "exit with a message", err: &exitError{code: 2, err: errors.New("1 conflict left")}, wantCode: 2, wantShow: true},
 		{name: "wrapped exit", err: fmt.Errorf("apply: %w", &exitError{code: 1}), wantCode: 1, wantShow: false},
 	}
 

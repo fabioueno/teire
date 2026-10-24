@@ -13,6 +13,14 @@ import (
 
 const renderHome = "/Users/test"
 
+func TestPlural(t *testing.T) {
+	t.Parallel()
+
+	assert.Equal(t, "0 conflicts", Plural(0, "conflict"))
+	assert.Equal(t, "1 conflict", Plural(1, "conflict"))
+	assert.Equal(t, "2 conflicts", Plural(2, "conflict"))
+}
+
 func TestShortPath(t *testing.T) {
 	t.Parallel()
 
@@ -91,7 +99,7 @@ func TestRenderWhenInPlace(t *testing.T) {
 	var out bytes.Buffer
 	require.NoError(t, Render(&out, p, renderHome))
 
-	assert.Equal(t, "Everything is in place (1 targets).\n", out.String())
+	assert.Equal(t, "Everything is in place (1 target).\n", out.String())
 }
 
 func TestRenderShowsEachPackageOnce(t *testing.T) {

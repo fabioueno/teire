@@ -110,10 +110,19 @@ func summary(p Plan, unchanged int) string {
 	}
 
 	if changed == 0 {
-		return fmt.Sprintf("Everything is in place (%d targets).", unchanged)
+		return fmt.Sprintf("Everything is in place (%s).", Plural(unchanged, "target"))
 	}
 
-	return fmt.Sprintf("%d to change, %d conflicts, %d unchanged.", changed, p.Conflicts(), unchanged)
+	return fmt.Sprintf("%d to change, %s, %d unchanged.", changed, Plural(p.Conflicts(), "conflict"), unchanged)
+}
+
+// Plural writes a count with its noun, adding an s for any count but one.
+func Plural(n int, noun string) string {
+	if n == 1 {
+		return "1 " + noun
+	}
+
+	return fmt.Sprintf("%d %ss", n, noun)
 }
 
 // ShortPath writes a path below home with ~ in front.

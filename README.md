@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>teire (手入れ)</h1>
+  <h1>Teire (手入れ)</h1>
 
   <p>Keeps a machine's dotfiles in the shape that a repository declares.</p>
 </div>
