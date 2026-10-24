@@ -46,7 +46,9 @@ The host file exists because two Macs can have the same default name.
 `merge` is for a file that another program also writes, such as
 `.claude.json`. Teire owns only the paths in `own`:
 
-- It sets and deletes owned paths with `sjson`, and keeps all other bytes.
+- It sets and deletes owned paths with `sjson`, and keeps all other bytes. A
+  new value goes in compact, at the end of its object. Claude Code formats
+  the file again on its next write.
 - It keeps the file mode, and replaces the file with an atomic rename.
 - After the write, it reads the file again and reports each owned value that
   did not stay.
@@ -66,7 +68,8 @@ of the repository.
 | same    | changed | Report it.                                   |
 | changed | changed | Ask on a terminal. Without one, exit with 2. |
 
-Without state, Teire treats each difference as a conflict. Before each
+Without state, Teire sets an owned path that the target does not have, and
+treats each other difference as a conflict. Before each
 overwrite, Teire saves the old target in
 `$XDG_STATE_HOME/teire/backups/<timestamp>/`.
 

@@ -1,0 +1,11 @@
+{
+    "numStartups": 42,
+    "theme": "dark",
+    "mcpServers": {
+        "github": {"type": "http", "url": "https://github.example/mcp"},
+        "notes": {"type": "http", "url": "https://notes.example/mcp?debug=1"}
+    },
+    "projects": {
+        "/Users/test/repo": {"hasTrustDialogAccepted": true}
+    }
+}
