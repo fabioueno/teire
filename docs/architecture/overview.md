@@ -119,9 +119,11 @@ Before Teire overwrites or merges into a target, it saves the old target in
   is given. It exits with 0 when all is in place, 1 for changes, and 2 for
   conflicts.
 - `apply` shows the plan, asks once on a terminal, then writes. `--yes` skips
-  the question, and is needed when stdin is not a terminal.
-- `adopt <path>` moves a plain file into the source folder of the deepest link
-  package whose target holds it, then links the file back.
+  the question, and is needed when stdin is not a terminal. With nothing to
+  change, it still records the targets in place, so a later removal knows which
+  links Teire made.
+- `adopt <path>` moves a plain file into the source folder of the deepest
+  `files` package whose target holds it, then links the file back.
 - `init --host <name>` writes the host file.
 
 Teire finds the repository from `--repo`, or else from the nearest folder at or

@@ -215,3 +215,22 @@ func TestMergeLeavingTheManifestDeletesOwnedPaths(t *testing.T) {
 	_, err = h.run("plan")
 	assert.NoError(t, err)
 }
+
+func TestApplyRecordsTargetsAlreadyInPlace(t *testing.T) {
+	t.Parallel()
+
+	h := newHarness(t)
+	_, err := h.run("apply", "--yes")
+	require.NoError(t, err)
+	require.NoError(t, os.Remove(h.env().StatePath()))
+
+	out, err := h.run("apply", "--yes")
+	require.NoError(t, err)
+	assert.Equal(t, golden(t, "plan-in-sync.txt"), out)
+
+	require.NoError(t, os.RemoveAll(filepath.Join(h.repo, "nvim")))
+
+	out, err = h.run("plan")
+	assert.Equal(t, 1, exitCode(t, err))
+	assert.Contains(t, out, "(no longer managed)\n  remove    ~/.config/nvim\n")
+}

@@ -46,8 +46,15 @@ func runApply(cmd *cobra.Command, d deps, opts *options, yes bool) error {
 		return err
 	}
 
+	// With nothing to change, apply still records the targets that are in
+	// place, so a later removal knows which links teire owns.
 	if !p.Changed() {
-		return nil
+		next, _, err := engine.Apply(w.env, p, w.state, skipConflict, d.now())
+		if err != nil {
+			return err
+		}
+
+		return next.Save(w.env.StatePath())
 	}
 
 	interactive := d.isTerminal()
