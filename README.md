@@ -41,8 +41,13 @@ Teire exists for three cases that these tools handle poorly together:
 
 ## Install
 
-Release builds are not published yet. Until they are, install with Go 1.27 or
-later:
+With Homebrew:
+
+```sh
+brew install fabioueno/tap/teire
+```
+
+Or with Go 1.27 or later:
 
 ```sh
 go install github.com/fabioueno/teire/cmd/teire@latest
@@ -102,7 +107,7 @@ Every overwrite first saves the old target under
 ## Status
 
 Early development. The `files`, `folder` and `merge` strategies work on
-macOS. Release builds, macOS settings and Homebrew packages are planned.
+macOS. macOS settings and Homebrew packages are planned.
 
 ## Documentation
 

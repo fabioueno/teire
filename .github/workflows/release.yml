@@ -29,6 +29,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 3
 
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -63,3 +66,48 @@ jobs:
           TAG: ${{ steps.version.outputs.tag }}
           SHA: ${{ github.sha }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # The workflow's own token can write only to this repository, so the tap
+  # takes a deploy key with write access, kept in the TAP_DEPLOY_KEY secret.
+  formula:
+    name: Update the Homebrew formula
+    needs: release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+
+    steps:
+      - name: Checkout tap
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: fabioueno/homebrew-tap
+          ssh-key: ${{ secrets.TAP_DEPLOY_KEY }}
+
+      - name: Point the formula at the new tag
+        shell: bash
+        run: |
+          URL="https://github.com/${GITHUB_REPOSITORY}/archive/refs/tags/${TAG}.tar.gz"
+          SHA256=$(curl -fsSL "$URL" | sha256sum | cut -d ' ' -f 1)
+
+          sed -i -E \
+            -e "s|^  url \".*\"$|  url \"${URL}\"|" \
+            -e "s|^  sha256 \".*\"$|  sha256 \"${SHA256}\"|" \
+            Formula/teire.rb
+
+          if git diff --quiet Formula/teire.rb; then
+            echo "::error::Formula/teire.rb did not change"
+            exit 1
+          fi
+        env:
+          TAG: ${{ needs.release.outputs.tag }}
+
+      - name: Commit and push
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -a \
+            -m "chore(teire): update to ${TAG#v}" \
+            -m "Point the formula at the ${TAG} source archive."
+          git push
+        env:
+          TAG: ${{ needs.release.outputs.tag }}

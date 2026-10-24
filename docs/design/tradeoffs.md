@@ -62,6 +62,17 @@ differences inside files seen so far.
 Revisit when two targets need the same file, or a file needs a different value
 on each machine.
 
+## A Homebrew formula, not a cask
+
+Teire ships as a formula that builds from source on install. A cask with a
+prebuilt binary was turned down: an unsigned binary that Homebrew downloads
+gets the macOS quarantine flag, and Homebrew deprecated both unsigned casks and
+its `--no-quarantine` bypass in 5.0.0. Signing and notarization need a paid
+Apple Developer account. A binary that Homebrew builds on the Mac carries no
+quarantine flag.
+
+Revisit when the build time on install becomes a cost, or when Teire is signed.
+
 ## cobra, not the standard flag package
 
 The standard `flag` package stops at the first argument that is not a flag. It

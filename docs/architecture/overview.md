@@ -138,6 +138,22 @@ Before Teire overwrites or merges into a target, it saves the old target in
 Teire finds the repository from `--repo`, or else from the nearest folder at or
 above the current one that holds `teire.toml`.
 
+## Releases
+
+The Release workflow starts by hand, with a patch, minor or major bump. It runs
+CI, creates the next tag and a GitHub release, then updates the Homebrew
+formula in `fabioueno/homebrew-tap`:
+
+1. It downloads the source archive that GitHub serves for the new tag, and
+   computes its SHA-256.
+2. It writes the archive URL and the checksum into `Formula/teire.rb`.
+3. It pushes that change to the tap with a deploy key, kept in the
+   `TAP_DEPLOY_KEY` secret, because the workflow's own token can write only to
+   this repository.
+
+`brew install fabioueno/tap/teire` then builds Teire from that source with Go,
+and stamps the version into the binary.
+
 ## Packages
 
 ```mermaid
