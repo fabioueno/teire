@@ -12,7 +12,7 @@ func TestResolveLeavesTheManifestUnchanged(t *testing.T) {
 
 	m := loadManifest(t, "claude.toml")
 
-	_, err := Resolve(m, "work", repo, home)
+	_, err := Resolve(m, "work", repoWith("claude"), home)
 	require.NoError(t, err)
 	assert.Equal(t, "~/.claude", m.Packages["claude"].Target)
 	assert.Equal(t, "~/.claude.json", m.Packages["claude"].Files["claude.json"].Target)
@@ -51,7 +51,7 @@ func TestWithHost(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			assert.Equal(t, tc.want, withHost(m, tc.host))
+			assert.Equal(t, tc.want, withHost(m, tc.host, repoWith("claude")))
 		})
 	}
 }
@@ -59,7 +59,7 @@ func TestWithHost(t *testing.T) {
 func TestWithHostAddsAPackage(t *testing.T) {
 	t.Parallel()
 
-	got := withHost(loadManifest(t, "resolve/host-adds-package.toml"), "work")
+	got := withHost(loadManifest(t, "resolve/host-adds-package.toml"), "work", repoWith("tmux"))
 
-	assert.Equal(t, map[string]Package{"starship": {Target: "~/.config"}}, got)
+	assert.Equal(t, map[string]Package{"tmux": {}}, got)
 }

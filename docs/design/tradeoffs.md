@@ -34,14 +34,24 @@ merges owned paths instead.
 Revisit when Claude Code keeps user MCP servers in a file that only the user
 writes.
 
-## Folder links only on request
+## Linked files, not linked folders, by default
 
 A folder link sends each file that a program writes into the folder to the
 repository. Claude Code writes transcripts, history and synced skills into its
-folder. So a folder link is the `folder` strategy, and a package must ask for
-it.
+folder. So the default strategy is `files`, and only a known package whose
+folder only you write, such as `nvim`, defaults to `folder`.
 
 Revisit when most packages are folders that only you write.
+
+## Built-in defaults for common packages
+
+Teire knows the target and strategy of common packages, so a repository needs
+no entry for them. Declaring every package in `teire.toml` was turned down:
+most entries only restated where a tool keeps its config. Any other package
+still works, with a declared entry and the `~/.config/<name>` default, so a new
+tool does not need a new release of Teire.
+
+Revisit when the list needs changes more often than Teire is released.
 
 ## No templates and no fan-out
 

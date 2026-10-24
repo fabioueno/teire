@@ -18,7 +18,7 @@ import (
 )
 
 // Item is the plan for one target. Link is set for link and folder targets,
-// Merge for merge targets. An item with Removed set has left the manifest.
+// Merge for merge targets. An item with Removed set is no longer managed.
 type Item struct {
 	Package  string
 	Path     string
@@ -75,7 +75,7 @@ func planTarget(e env.Env, t manifest.Target, last state.Entry) (Item, error) {
 	}
 
 	switch t.Strategy {
-	case manifest.Link, manifest.Folder:
+	case manifest.Files, manifest.Folder:
 		c, err := strategy.PlanLink(item.Path, item.Source, e.Repo, t.Strategy == manifest.Folder)
 		if err != nil {
 			return Item{}, err
@@ -115,7 +115,7 @@ func planRemoved(path string, last state.Entry) (Item, error) {
 	item := Item{Path: path, Strategy: last.Strategy, Source: last.Source, Removed: true, Last: last}
 
 	switch last.Strategy {
-	case manifest.Link, manifest.Folder:
+	case manifest.Files, manifest.Folder:
 		item.Link = strategy.PlanUnlink(path, last.Source)
 	case manifest.Merge:
 		target, err := os.ReadFile(path)
@@ -148,7 +148,7 @@ func (i Item) Changed() bool {
 	}
 
 	switch i.Strategy {
-	case manifest.Link, manifest.Folder:
+	case manifest.Files, manifest.Folder:
 		return i.Link.Action != strategy.LinkUnchanged
 	case manifest.Merge:
 		for _, c := range i.Merge {
@@ -163,7 +163,7 @@ func (i Item) Changed() bool {
 
 func (i Item) Conflicts() int {
 	switch i.Strategy {
-	case manifest.Link, manifest.Folder:
+	case manifest.Files, manifest.Folder:
 		if i.Link.Action == strategy.LinkConflict {
 			return 1
 		}

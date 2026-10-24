@@ -52,7 +52,7 @@ func Apply(e env.Env, p Plan, st state.State, resolve Resolver, now time.Time) (
 		var err error
 
 		switch item.Strategy {
-		case manifest.Link, manifest.Folder:
+		case manifest.Files, manifest.Folder:
 			err = applyLink(item, next, &result, resolve, backups)
 		case manifest.Merge:
 			err = applyMerge(item, next, &result, resolve, backups)

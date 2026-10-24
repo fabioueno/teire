@@ -46,7 +46,7 @@ func (w world) repo(rel string) string {
 func (w world) targets() []manifest.Target {
 	return []manifest.Target{
 		{Package: "claude", Source: "claude/claude.json", Path: w.home(".claude.json"), Strategy: manifest.Merge, Own: []string{"mcpServers.notes"}},
-		{Package: "zsh", Source: "zsh/.zshrc", Path: w.home(".zshrc"), Strategy: manifest.Link},
+		{Package: "zsh", Source: "zsh/.zshrc", Path: w.home(".zshrc"), Strategy: manifest.Files},
 	}
 }
 

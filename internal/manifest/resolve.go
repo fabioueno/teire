@@ -23,7 +23,7 @@ type Target struct {
 const finderMetadata = ".DS_Store"
 
 func Resolve(m Manifest, host string, repo fs.FS, home string) ([]Target, error) {
-	packages := withHost(m, host)
+	packages := withHost(m, host, repo)
 
 	var targets []Target
 	for _, name := range slices.Sorted(maps.Keys(packages)) {
@@ -68,7 +68,7 @@ func resolvePackage(name string, p Package, repo fs.FS, home string) ([]Target, 
 		}
 
 		return []Target{{Package: name, Source: pkg.Source, Path: pkg.Target, Strategy: Folder}}, nil
-	case Link:
+	case Files:
 		return resolveFiles(name, pkg.Source, pkg.Target, p.Files, repo, home)
 	case Merge:
 		return nil, errors.New(`strategy "merge" is only valid for a file entry`)
@@ -94,7 +94,7 @@ func resolveFiles(name, source, target string, files map[string]File, repo fs.FS
 			Package:  name,
 			Source:   p,
 			Path:     filepath.Join(target, filepath.FromSlash(rel)),
-			Strategy: Link,
+			Strategy: Files,
 		}
 
 		if file, ok := pending[rel]; ok {
@@ -141,7 +141,7 @@ func applyFile(t Target, file File, home string) (Target, error) {
 		}
 
 		t.Own = file.Own
-	case Link:
+	case Files:
 		if len(file.Own) > 0 {
 			return Target{}, errors.New(`own is only valid with strategy "merge"`)
 		}

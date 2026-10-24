@@ -38,5 +38,5 @@ func TestAdoptNeedsACoveringPackage(t *testing.T) {
 
 	_, err := h.run("adopt", path)
 
-	assert.ErrorContains(t, err, "no link package has a target that covers it")
+	assert.ErrorContains(t, err, "no files package has a target that covers it")
 }

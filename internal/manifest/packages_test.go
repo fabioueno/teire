@@ -10,18 +10,22 @@ import (
 func TestPackagesFillsDefaultsForTheHost(t *testing.T) {
 	t.Parallel()
 
-	got, err := Packages(loadManifest(t, "claude.toml"), "work", home)
+	got, err := Packages(loadManifest(t, "claude.toml"), "work", repoWith("claude"), home)
 
 	require.NoError(t, err)
 	assert.Equal(t, []ResolvedPackage{
-		{Name: "claude", Source: "claude", Target: home + "/.claude-work", Strategy: Link},
+		{Name: "claude", Source: "claude", Target: home + "/.claude-work", Strategy: Files},
 	}, got)
 }
 
-func TestPackagesNeedsATarget(t *testing.T) {
+func TestPackagesFillsKnownDefaults(t *testing.T) {
 	t.Parallel()
 
-	_, err := Packages(loadManifest(t, "invalid/missing-target.toml"), "", home)
+	got, err := Packages(loadManifest(t, "resolve/empty.toml"), "", repoWith("nvim", "zsh"), home)
 
-	assert.ErrorContains(t, err, `package "claude": target is required`)
+	require.NoError(t, err)
+	assert.Equal(t, []ResolvedPackage{
+		{Name: "nvim", Source: "nvim", Target: home + "/.config/nvim", Strategy: Folder},
+		{Name: "zsh", Source: "zsh", Target: home, Strategy: Files},
+	}, got)
 }

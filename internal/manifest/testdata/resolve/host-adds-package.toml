@@ -1,2 +1,1 @@
-[host.work.package.starship]
-target = "~/.config"
+[host.work.package.tmux]

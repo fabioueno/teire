@@ -1,8 +1,8 @@
 package manifest
 
 import (
-	"errors"
 	"fmt"
+	"io/fs"
 	"maps"
 	"path"
 	"slices"
@@ -17,8 +17,8 @@ type ResolvedPackage struct {
 	Strategy Strategy
 }
 
-func Packages(m Manifest, host, home string) ([]ResolvedPackage, error) {
-	packages := withHost(m, host)
+func Packages(m Manifest, host string, repo fs.FS, home string) ([]ResolvedPackage, error) {
+	packages := withHost(m, host, repo)
 
 	resolved := make([]ResolvedPackage, 0, len(packages))
 	for _, name := range slices.Sorted(maps.Keys(packages)) {
@@ -39,19 +39,22 @@ func resolveHead(name string, p Package, home string) (ResolvedPackage, error) {
 		source = name
 	}
 
-	if p.Target == "" {
-		return ResolvedPackage{}, errors.New("target is required")
+	defaults := defaultsFor(name)
+
+	target := p.Target
+	if target == "" {
+		target = defaults.Target
 	}
 
-	target, err := expandTarget(p.Target, home)
+	expanded, err := expandTarget(target, home)
 	if err != nil {
 		return ResolvedPackage{}, err
 	}
 
 	strategy := p.Strategy
 	if strategy == "" {
-		strategy = Link
+		strategy = defaults.Strategy
 	}
 
-	return ResolvedPackage{Name: name, Source: path.Clean(source), Target: target, Strategy: strategy}, nil
+	return ResolvedPackage{Name: name, Source: path.Clean(source), Target: expanded, Strategy: strategy}, nil
 }

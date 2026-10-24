@@ -17,7 +17,7 @@ var saved = State{Targets: map[string]Entry{
 		Owned:    map[string]string{"mcpServers.notes": "4f2d"},
 	},
 	"/Users/test/.claude/settings.json": {
-		Strategy: manifest.Link,
+		Strategy: manifest.Files,
 		Source:   "/Users/test/dotfiles/claude/settings.json",
 	},
 }}

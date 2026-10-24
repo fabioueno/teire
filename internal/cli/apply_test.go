@@ -131,18 +131,18 @@ func TestMissingMergeTargetIsReported(t *testing.T) {
 	assert.ErrorIs(t, statErr, os.ErrNotExist, "apply does not create a merge target")
 }
 
-func TestPackageLeavingTheManifestIsUnlinked(t *testing.T) {
+func TestPackageWhoseFolderIsGoneIsUnlinked(t *testing.T) {
 	t.Parallel()
 
 	h := newHarness(t)
 	_, err := h.run("apply", "--yes")
 	require.NoError(t, err)
 
-	h.copyFile("manifests/without-nvim.toml", filepath.Join(h.repo, "teire.toml"))
+	require.NoError(t, os.RemoveAll(filepath.Join(h.repo, "nvim")))
 
 	out, err := h.run("plan")
 	assert.Equal(t, 1, exitCode(t, err))
-	assert.Contains(t, out, "(removed from the manifest)\n  remove    ~/.config/nvim\n")
+	assert.Contains(t, out, "(no longer managed)\n  remove    ~/.config/nvim\n")
 
 	_, err = h.run("apply", "--yes")
 	require.NoError(t, err)
@@ -198,7 +198,8 @@ func TestMergeLeavingTheManifestDeletesOwnedPaths(t *testing.T) {
 	_, err := h.run("apply", "--yes")
 	require.NoError(t, err)
 
-	h.copyFile("manifests/without-claude.toml", filepath.Join(h.repo, "teire.toml"))
+	h.copyFile("manifests/empty.toml", filepath.Join(h.repo, "teire.toml"))
+	require.NoError(t, os.RemoveAll(filepath.Join(h.repo, "claude")))
 
 	out, err := h.run("apply", "--yes")
 	require.NoError(t, err)

@@ -34,7 +34,7 @@ func TestApplyRecordsWhatItWrote(t *testing.T) {
 	assert.Equal(t, w.repo("zsh/.zshrc"), dest)
 	assert.Equal(t, "https://notes.example/mcp", gjson.Get(w.read(w.home(".claude.json")), "mcpServers.notes.url").String())
 
-	assert.Equal(t, state.Entry{Strategy: manifest.Link, Source: w.repo("zsh/.zshrc")}, next.Targets[w.home(".zshrc")])
+	assert.Equal(t, state.Entry{Strategy: manifest.Files, Source: w.repo("zsh/.zshrc")}, next.Targets[w.home(".zshrc")])
 	assert.Contains(t, next.Targets[w.home(".claude.json")].Owned, "mcpServers.notes")
 }
 
@@ -127,7 +127,7 @@ func TestApplyForgetsRemovedEntries(t *testing.T) {
 	w := newWorld(t)
 	require.NoError(t, os.Symlink(w.repo("zsh/.zshrc"), w.home(".zshrc")))
 	st := state.State{Targets: map[string]state.Entry{
-		w.home(".zshrc"): {Strategy: manifest.Link, Source: w.repo("zsh/.zshrc")},
+		w.home(".zshrc"): {Strategy: manifest.Files, Source: w.repo("zsh/.zshrc")},
 	}}
 
 	p, err := Build(w.env, nil, st)

@@ -12,7 +12,7 @@ changes.
 
 ## Status
 
-Early development. `init`, `plan`, `apply` and `adopt` work for `link`,
+Early development. `init`, `plan`, `apply` and `adopt` work for `files`,
 `folder` and `merge` targets.
 
 ## Documentation

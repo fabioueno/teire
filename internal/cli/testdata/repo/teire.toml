@@ -1,13 +1,3 @@
-[package.zsh]
-target = "~"
-
-[package.nvim]
-target   = "~/.config/nvim"
-strategy = "folder"
-
-[package.claude]
-target = "~/.claude"
-
 [package.claude.file."claude.json"]
 strategy = "merge"
 target   = "~/.claude.json"

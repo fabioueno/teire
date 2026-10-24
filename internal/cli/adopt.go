@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/spf13/cobra"
@@ -21,7 +22,7 @@ func newAdopt(d deps, opts *options) *cobra.Command {
 				return err
 			}
 
-			packages, err := manifest.Packages(w.manifest, w.host, w.env.Home)
+			packages, err := manifest.Packages(w.manifest, w.host, os.DirFS(w.env.Repo), w.env.Home)
 			if err != nil {
 				return err
 			}

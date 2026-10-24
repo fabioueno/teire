@@ -51,7 +51,7 @@ func TestBuildPlansEntriesThatLeftTheManifest(t *testing.T) {
 	require.NoError(t, os.Symlink(w.repo("zsh/.zshrc"), w.home(".zshrc")))
 
 	st := state.State{Targets: map[string]state.Entry{
-		w.home(".zshrc"):       {Strategy: manifest.Link, Source: w.repo("zsh/.zshrc")},
+		w.home(".zshrc"):       {Strategy: manifest.Files, Source: w.repo("zsh/.zshrc")},
 		w.home(".claude.json"): {Strategy: manifest.Merge, Owned: map[string]string{"mcpServers.notes": "4f2d"}},
 	}}
 
@@ -89,11 +89,11 @@ func TestItemChangedAndConflicts(t *testing.T) {
 	}{
 		{
 			name: "link in place",
-			item: Item{Strategy: manifest.Link, Link: strategy.LinkChange{Action: strategy.LinkUnchanged}},
+			item: Item{Strategy: manifest.Files, Link: strategy.LinkChange{Action: strategy.LinkUnchanged}},
 		},
 		{
 			name:        "link to create",
-			item:        Item{Strategy: manifest.Link, Link: strategy.LinkChange{Action: strategy.LinkCreate}},
+			item:        Item{Strategy: manifest.Files, Link: strategy.LinkChange{Action: strategy.LinkCreate}},
 			wantChanged: true,
 		},
 		{
@@ -114,7 +114,7 @@ func TestItemChangedAndConflicts(t *testing.T) {
 		},
 		{
 			name:        "removed entry",
-			item:        Item{Strategy: manifest.Link, Removed: true, Link: strategy.LinkChange{Action: strategy.LinkRelease}},
+			item:        Item{Strategy: manifest.Files, Removed: true, Link: strategy.LinkChange{Action: strategy.LinkRelease}},
 			wantChanged: true,
 		},
 	}

@@ -11,7 +11,7 @@ import (
 	"github.com/fabioueno/teire/internal/strategy"
 )
 
-const removedHeading = "(removed from the manifest)"
+const removedHeading = "(no longer managed)"
 
 // Render writes the plan grouped by package, one line for each target that
 // is not in sync, then a summary line.
@@ -47,8 +47,8 @@ func Render(w io.Writer, p Plan, home string) error {
 	return err
 }
 
-// displayOrder groups items by package, with entries that left the manifest
-// last, so each package heading appears once.
+// displayOrder groups items by package, with entries that are no longer
+// managed last, so each package heading appears once.
 func displayOrder(items []Item) []Item {
 	sorted := slices.Clone(items)
 	slices.SortStableFunc(sorted, func(a, b Item) int {
@@ -79,7 +79,7 @@ func renderItem(b *strings.Builder, item Item, home string) {
 	}
 
 	switch item.Strategy {
-	case manifest.Link, manifest.Folder:
+	case manifest.Files, manifest.Folder:
 		line(b, string(item.Link.Action), path, item.Link.Reason)
 	case manifest.Merge:
 		line(b, "merge", path, "")

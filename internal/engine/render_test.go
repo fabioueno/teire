@@ -52,13 +52,13 @@ func TestRenderGroupsByPackage(t *testing.T) {
 		{
 			Package:  "claude",
 			Path:     renderHome + "/.claude/settings.json",
-			Strategy: manifest.Link,
+			Strategy: manifest.Files,
 			Link:     strategy.LinkChange{Action: strategy.LinkUnchanged},
 		},
 		{
 			Package:  "zsh",
 			Path:     renderHome + "/.zshrc",
-			Strategy: manifest.Link,
+			Strategy: manifest.Files,
 			Link:     strategy.LinkChange{Action: strategy.LinkConflict, Reason: strategy.ReasonDifferentContent},
 		},
 		{
@@ -85,7 +85,7 @@ func TestRenderWhenInPlace(t *testing.T) {
 	t.Parallel()
 
 	p := Plan{Items: []Item{
-		{Package: "zsh", Path: renderHome + "/.zshrc", Strategy: manifest.Link, Link: strategy.LinkChange{Action: strategy.LinkUnchanged}},
+		{Package: "zsh", Path: renderHome + "/.zshrc", Strategy: manifest.Files, Link: strategy.LinkChange{Action: strategy.LinkUnchanged}},
 	}}
 
 	var out bytes.Buffer
@@ -99,9 +99,9 @@ func TestRenderShowsEachPackageOnce(t *testing.T) {
 
 	create := strategy.LinkChange{Action: strategy.LinkCreate}
 	p := Plan{Items: []Item{
-		{Package: "zsh", Path: renderHome + "/.hushlogin", Strategy: manifest.Link, Link: create},
-		{Package: "git", Path: renderHome + "/.gitconfig", Strategy: manifest.Link, Link: create},
-		{Package: "zsh", Path: renderHome + "/.zshrc", Strategy: manifest.Link, Link: create},
+		{Package: "zsh", Path: renderHome + "/.hushlogin", Strategy: manifest.Files, Link: create},
+		{Package: "git", Path: renderHome + "/.gitconfig", Strategy: manifest.Files, Link: create},
+		{Package: "zsh", Path: renderHome + "/.zshrc", Strategy: manifest.Files, Link: create},
 	}}
 
 	var out bytes.Buffer

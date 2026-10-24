@@ -14,8 +14,8 @@ func TestCoveringPackage(t *testing.T) {
 	t.Parallel()
 
 	packages := []manifest.ResolvedPackage{
-		{Name: "zsh", Source: "zsh", Target: "/Users/test", Strategy: manifest.Link},
-		{Name: "zed", Source: "zed", Target: "/Users/test/.config/zed", Strategy: manifest.Link},
+		{Name: "zsh", Source: "zsh", Target: "/Users/test", Strategy: manifest.Files},
+		{Name: "zed", Source: "zed", Target: "/Users/test/.config/zed", Strategy: manifest.Files},
 		{Name: "nvim", Source: "nvim", Target: "/Users/test/.config/nvim", Strategy: manifest.Folder},
 	}
 
@@ -52,7 +52,7 @@ func TestAdopt(t *testing.T) {
 	w := newWorld(t)
 	path := w.home(".zprofile")
 	w.copyFile("files/.zprofile", path)
-	packages := []manifest.ResolvedPackage{{Name: "zsh", Source: "zsh", Target: w.env.Home, Strategy: manifest.Link}}
+	packages := []manifest.ResolvedPackage{{Name: "zsh", Source: "zsh", Target: w.env.Home, Strategy: manifest.Files}}
 	st := emptyState()
 
 	dest, err := Adopt(w.env, packages, st, path)
@@ -102,7 +102,7 @@ func TestAdoptErrors(t *testing.T) {
 			t.Parallel()
 
 			w := newWorld(t)
-			packages := []manifest.ResolvedPackage{{Name: "zsh", Source: "zsh", Target: w.env.Home, Strategy: manifest.Link}}
+			packages := []manifest.ResolvedPackage{{Name: "zsh", Source: "zsh", Target: w.env.Home, Strategy: manifest.Files}}
 
 			_, err := Adopt(w.env, packages, emptyState(), tc.setup(w))
 

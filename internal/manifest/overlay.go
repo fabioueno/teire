@@ -1,12 +1,19 @@
 package manifest
 
-import "maps"
+import (
+	"io/fs"
+	"maps"
+)
 
-func withHost(m Manifest, host string) map[string]Package {
+// withHost gives the packages for one host: the declared ones, the known
+// folders found in the repository, then the host section over both.
+func withHost(m Manifest, host string, repo fs.FS) map[string]Package {
 	packages := maps.Clone(m.Packages)
 	if packages == nil {
 		packages = map[string]Package{}
 	}
+
+	discover(packages, repo)
 
 	for name, over := range m.Hosts[host].Packages {
 		base, ok := packages[name]

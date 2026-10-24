@@ -121,7 +121,7 @@ func planOverFile(c LinkChange) (LinkChange, error) {
 	return c, nil
 }
 
-// PlanUnlink plans an entry that left the manifest. teire removes the link
+// PlanUnlink plans an entry that is no longer managed. teire removes the link
 // only while it still points where teire made it point.
 func PlanUnlink(path, recorded string) LinkChange {
 	c := LinkChange{Path: path, Source: recorded, Action: LinkRelease}

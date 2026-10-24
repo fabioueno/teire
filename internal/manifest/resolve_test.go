@@ -20,6 +20,7 @@ var repo = fstest.MapFS{
 	"nvim/init.lua":          {Data: []byte("")},
 	"nvim/lua/plugins.lua":   {Data: []byte("")},
 	"starship/starship.toml": {Data: []byte("")},
+	"tmux/tmux.conf":         {Data: []byte("")},
 }
 
 func TestResolve(t *testing.T) {
@@ -29,47 +30,53 @@ func TestResolve(t *testing.T) {
 		name     string
 		manifest string
 		host     string
+		folders  []string
 		want     []Target
 	}{
 		{
 			name:     "default machine",
 			manifest: "claude.toml",
 			host:     "MacBook-Pro",
+			folders:  []string{"claude"},
 			want: []Target{
 				{Package: "claude", Source: "claude/claude.json", Path: home + "/.claude.json", Strategy: Merge, Own: []string{"mcpServers.notes"}},
-				{Package: "claude", Source: "claude/CLAUDE.md", Path: home + "/.claude/CLAUDE.md", Strategy: Link},
-				{Package: "claude", Source: "claude/settings.json", Path: home + "/.claude/settings.json", Strategy: Link},
+				{Package: "claude", Source: "claude/CLAUDE.md", Path: home + "/.claude/CLAUDE.md", Strategy: Files},
+				{Package: "claude", Source: "claude/settings.json", Path: home + "/.claude/settings.json", Strategy: Files},
 			},
 		},
 		{
 			name:     "host overrides package and file targets",
 			manifest: "claude.toml",
 			host:     "work",
+			folders:  []string{"claude"},
 			want: []Target{
 				{Package: "claude", Source: "claude/claude.json", Path: home + "/.claude-work/.claude.json", Strategy: Merge, Own: []string{"mcpServers.notes"}},
-				{Package: "claude", Source: "claude/CLAUDE.md", Path: home + "/.claude-work/CLAUDE.md", Strategy: Link},
-				{Package: "claude", Source: "claude/settings.json", Path: home + "/.claude-work/settings.json", Strategy: Link},
+				{Package: "claude", Source: "claude/CLAUDE.md", Path: home + "/.claude-work/CLAUDE.md", Strategy: Files},
+				{Package: "claude", Source: "claude/settings.json", Path: home + "/.claude-work/settings.json", Strategy: Files},
 			},
 		},
 		{
 			name:     "host adds a package",
 			manifest: "resolve/host-adds-package.toml",
 			host:     "work",
+			folders:  []string{"tmux"},
 			want: []Target{
-				{Package: "starship", Source: "starship/starship.toml", Path: home + "/.config/starship.toml", Strategy: Link},
+				{Package: "tmux", Source: "tmux/tmux.conf", Path: home + "/.config/tmux/tmux.conf", Strategy: Files},
 			},
 		},
 		{
 			name:     "nested files keep their folders",
 			manifest: "resolve/nested-files.toml",
+			folders:  []string{"zsh"},
 			want: []Target{
-				{Package: "zsh", Source: "zsh/.zsh/10-env.zsh", Path: home + "/.zsh/10-env.zsh", Strategy: Link},
-				{Package: "zsh", Source: "zsh/.zshrc", Path: home + "/.zshrc", Strategy: Link},
+				{Package: "zsh", Source: "zsh/.zsh/10-env.zsh", Path: home + "/.zsh/10-env.zsh", Strategy: Files},
+				{Package: "zsh", Source: "zsh/.zshrc", Path: home + "/.zshrc", Strategy: Files},
 			},
 		},
 		{
 			name:     "folder strategy gives one target",
 			manifest: "resolve/folder.toml",
+			folders:  []string{"nvim"},
 			want: []Target{
 				{Package: "nvim", Source: "nvim", Path: home + "/.config/nvim", Strategy: Folder},
 			},
@@ -77,8 +84,33 @@ func TestResolve(t *testing.T) {
 		{
 			name:     "source names another folder",
 			manifest: "resolve/other-source.toml",
+			folders:  []string{"starship"},
 			want: []Target{
-				{Package: "prompt", Source: "starship/starship.toml", Path: "/etc/xdg/starship.toml", Strategy: Link},
+				{Package: "prompt", Source: "starship/starship.toml", Path: "/etc/xdg/starship.toml", Strategy: Files},
+			},
+		},
+		{
+			name:     "known folders need no entry",
+			manifest: "resolve/empty.toml",
+			folders:  []string{"nvim", "starship", "zsh"},
+			want: []Target{
+				{Package: "nvim", Source: "nvim", Path: home + "/.config/nvim", Strategy: Folder},
+				{Package: "starship", Source: "starship/starship.toml", Path: home + "/.config/starship.toml", Strategy: Files},
+				{Package: "zsh", Source: "zsh/.zsh/10-env.zsh", Path: home + "/.zsh/10-env.zsh", Strategy: Files},
+				{Package: "zsh", Source: "zsh/.zshrc", Path: home + "/.zshrc", Strategy: Files},
+			},
+		},
+		{
+			name:     "an unknown folder needs an entry",
+			manifest: "resolve/empty.toml",
+			folders:  []string{"tmux"},
+		},
+		{
+			name:     "a declared unknown package goes below ~/.config",
+			manifest: "resolve/unknown-package.toml",
+			folders:  []string{"tmux"},
+			want: []Target{
+				{Package: "tmux", Source: "tmux/tmux.conf", Path: home + "/.config/tmux/tmux.conf", Strategy: Files},
 			},
 		},
 	}
@@ -87,7 +119,7 @@ func TestResolve(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := Resolve(loadManifest(t, tc.manifest), tc.host, repo, home)
+			got, err := Resolve(loadManifest(t, tc.manifest), tc.host, repoWith(tc.folders...), home)
 			require.NoError(t, err)
 			assert.Equal(t, tc.want, got)
 		})
@@ -102,11 +134,6 @@ func TestResolveErrors(t *testing.T) {
 		manifest string
 		wantErr  string
 	}{
-		{
-			name:     "missing target",
-			manifest: "invalid/missing-target.toml",
-			wantErr:  `package "claude": target is required`,
-		},
 		{
 			name:     "relative target",
 			manifest: "invalid/relative-target.toml",

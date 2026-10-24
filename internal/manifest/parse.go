@@ -13,7 +13,7 @@ import (
 type Strategy string
 
 const (
-	Link   Strategy = "link"
+	Files  Strategy = "files"
 	Folder Strategy = "folder"
 	Merge  Strategy = "merge"
 )

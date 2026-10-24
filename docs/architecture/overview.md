@@ -6,13 +6,29 @@ A dotfiles repository has one `teire.toml` at its root. A package is a folder
 in the repository, and its layout mirrors its target folder. The package name
 is also the name of its source folder, unless the package sets `source`.
 
-Each file in a package uses the package strategy, which is `link` by default.
-A file needs its own entry only when it differs from its package.
+Teire knows the target and strategy of common packages. A folder with one of
+these names is a package without an entry in `teire.toml`:
+
+| Package    | Target              | Strategy |
+| ---------- | ------------------- | -------- |
+| `claude`   | `~/.claude`         | `files`  |
+| `ghostty`  | `~/.config/ghostty` | `files`  |
+| `git`      | `~`                 | `files`  |
+| `mise`     | `~/.config/mise`    | `files`  |
+| `nvim`     | `~/.config/nvim`    | `folder` |
+| `starship` | `~/.config`         | `files`  |
+| `zed`      | `~/.config/zed`     | `files`  |
+| `zsh`      | `~`                 | `files`  |
+
+Any other folder is a package only when `teire.toml` declares it, and it then
+defaults to `~/.config/<name>` with `files`. An entry changes only what differs
+from these defaults. A known folder that a declared package uses as its
+`source` is not a package of its own.
+
+Each file in a package uses the package strategy. A file needs its own entry
+only when it differs from its package.
 
 ```toml
-[package.claude]
-target = "~/.claude"
-
 [package.claude.file."claude.json"]
 strategy = "merge"
 target   = "~/.claude.json"
@@ -39,9 +55,14 @@ The host file exists because two Macs can have the same default name.
 
 | Strategy | Apply writes                                    | State records           |
 | -------- | ----------------------------------------------- | ----------------------- |
-| `link`   | A symlink from the target to the source file.   | That Teire made it.     |
+| `files`  | A symlink for each file in the package folder.  | That Teire made it.     |
 | `folder` | One symlink for the whole folder.               | That Teire made it.     |
 | `merge`  | The target with each owned path set or deleted. | Owned paths and hashes. |
+
+`files` makes each folder in the target a real folder and links only the files
+that the package holds. So everything else a program writes into that folder,
+such as the history and caches in `~/.claude`, stays out of the repository.
+`folder` makes the whole target folder one link instead.
 
 `merge` is for a file that another program also writes, such as
 `.claude.json`. Teire owns only the paths in `own`:
@@ -55,7 +76,7 @@ The host file exists because two Macs can have the same default name.
 - It deletes a path that left `own` only if state shows that Teire set it.
 - It does not create a target file that does not exist.
 
-`link` and `folder` replace a target without a question in three cases only:
+`files` and `folder` replace a target without a question in three cases only:
 
 - The target is a link to the same file through another path, such as
   `~/.dotfiles`.
@@ -64,9 +85,9 @@ The host file exists because two Macs can have the same default name.
 - The target is a plain file with the same bytes as the source.
 
 A target below a folder that links into the repository is a conflict, because
-a link made there would land in the repository itself. When an entry leaves the
-manifest, Teire removes its link only while the link still points where Teire
-made it point.
+a link made there would land in the repository itself. When a target is no
+longer managed, because its entry or its folder is gone, Teire removes its link
+only while the link still points where Teire made it point.
 
 ## State and conflicts
 
@@ -94,7 +115,7 @@ Before Teire overwrites or merges into a target, it saves the old target in
 ## Commands
 
 - `plan` shows each change and conflict, and writes nothing. It lists them by
-  package, with entries that left the manifest last. It runs when no command
+  package, with entries that are no longer managed last. It runs when no command
   is given. It exits with 0 when all is in place, 1 for changes, and 2 for
   conflicts.
 - `apply` shows the plan, asks once on a terminal, then writes. `--yes` skips

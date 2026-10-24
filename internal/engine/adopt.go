@@ -15,7 +15,7 @@ import (
 	"github.com/fabioueno/teire/internal/strategy"
 )
 
-// Adopt moves the file at path into the source folder of the link package
+// Adopt moves the file at path into the source folder of the files package
 // whose target covers it, links it back, and returns where the file went.
 func Adopt(e env.Env, packages []manifest.ResolvedPackage, st state.State, path string) (string, error) {
 	info, err := os.Lstat(path)
@@ -29,7 +29,7 @@ func Adopt(e env.Env, packages []manifest.ResolvedPackage, st state.State, path 
 
 	pkg, rel, ok := coveringPackage(packages, path)
 	if !ok {
-		return "", fmt.Errorf("adopt %s: no link package has a target that covers it", path)
+		return "", fmt.Errorf("adopt %s: no files package has a target that covers it", path)
 	}
 
 	inside, err := strategy.ResolvesInto(filepath.Dir(path), e.Repo)
@@ -54,19 +54,19 @@ func Adopt(e env.Env, packages []manifest.ResolvedPackage, st state.State, path 
 		return "", err
 	}
 
-	st.Targets[path] = state.Entry{Strategy: manifest.Link, Source: dest}
+	st.Targets[path] = state.Entry{Strategy: manifest.Files, Source: dest}
 
 	return dest, nil
 }
 
-// coveringPackage picks the link package with the deepest target that holds
+// coveringPackage picks the files package with the deepest target that holds
 // path, so ~/.config/zed wins over ~ for ~/.config/zed/settings.json.
 func coveringPackage(packages []manifest.ResolvedPackage, path string) (manifest.ResolvedPackage, string, bool) {
 	var best manifest.ResolvedPackage
 	bestRel, found := "", false
 
 	for _, pkg := range packages {
-		if pkg.Strategy != manifest.Link {
+		if pkg.Strategy != manifest.Files {
 			continue
 		}
 
