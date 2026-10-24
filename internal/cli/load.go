@@ -72,9 +72,21 @@ func readManifest(path string) (manifest.Manifest, error) {
 	return manifest.Parse(f)
 }
 
-// findRepo takes the --repo flag, or else the nearest folder from the current
-// one upward that holds a manifest.
+// findRepo gives the repository's real path, without links. Links record the
+// path teire saw, so reaching the same repository through a link such as
+// ~/.dotfiles must not give a second set of link paths.
 func findRepo(flag string, getwd func() (string, error)) (string, error) {
+	repo, err := locateRepo(flag, getwd)
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.EvalSymlinks(repo)
+}
+
+// locateRepo takes the --repo flag, or else the nearest folder from the
+// current one upward that holds a manifest.
+func locateRepo(flag string, getwd func() (string, error)) (string, error) {
 	if flag != "" {
 		repo, err := filepath.Abs(flag)
 		if err != nil {

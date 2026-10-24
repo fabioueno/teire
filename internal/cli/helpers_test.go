@@ -30,7 +30,11 @@ type harness struct {
 func newHarness(t *testing.T) *harness {
 	t.Helper()
 
-	root := t.TempDir()
+	// The repository path teire records is the real one, and macOS puts
+	// temporary folders below a link (/var -> /private/var).
+	root, err := filepath.EvalSymlinks(t.TempDir())
+	require.NoError(t, err)
+
 	h := &harness{
 		t:    t,
 		root: root,
