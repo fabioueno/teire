@@ -129,6 +129,11 @@ of the repository.
 | same    | changed | Report it, and leave the target alone. |
 | changed | changed | A conflict.                            |
 
+`pull` covers the row where only the target changed: it brings an owned path
+of a `merge` target back into the repository. A linked target needs no pull,
+because its edits already land in the repository. A program that replaces a
+link with a plain file leaves an ordinary conflict.
+
 Without state, Teire sets an owned path that the target does not have, and
 treats each other difference as a conflict.
 
@@ -150,6 +155,14 @@ Before Teire overwrites or merges into a target, it saves the old target in
   the question, and is needed when stdin is not a terminal. With nothing to
   change, it still records the targets in place, so a later removal knows which
   links Teire made.
+- `pull [path...]` writes the owned paths that drifted in `merge` targets back
+  into the repository, without a question, because git tracks the repository.
+  It writes the target value of each drifted path into the source file with
+  `sjson`, keeps every other byte, and records the new value in state. It
+  leaves a path that both sides changed, and reports it. With no arguments it
+  pulls every `merge` target; with paths it pulls only those, and reports a
+  path that has nothing to pull. A path that is not a managed target is an
+  error. Before it overwrites a source, it saves the old source in the backups.
 - `adopt <path>` moves a plain file into the source folder of the deepest
   `files` package whose target holds it, then links the file back.
 - `init --host <name>` writes the host file.

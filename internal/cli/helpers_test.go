@@ -87,6 +87,15 @@ func (h *harness) copyFile(from, to string) {
 	require.NoError(h.t, os.WriteFile(to, data, 0o644))
 }
 
+// replaceLink swaps the link for a plain file, the way a program does when it
+// writes a temporary file and renames it over the link.
+func (h *harness) replaceLink(path, fixture string) {
+	h.t.Helper()
+
+	require.NoError(h.t, os.Remove(path))
+	h.copyFile(fixture, path)
+}
+
 func (h *harness) read(path string) string {
 	h.t.Helper()
 
