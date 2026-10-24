@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "targets": {
+    "/Users/test/.claude.json": {
+      "strategy": "merge",
+      "owned": {
+        "mcpServers.notes": "4f2d"
+      }
+    },
+    "/Users/test/.claude/settings.json": {
+      "strategy": "link"
+    }
+  }
+}
