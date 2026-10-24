@@ -36,6 +36,9 @@ that a test can replace. CI runs on Linux.
 
 ## Tests
 
+The tests for `x.go` live in `x_test.go`. Helpers that several test files in
+a package share live in `helpers_test.go`, and fixtures live in `testdata/`.
+
 Tests use `testify`. Use `require` for a step that the rest of the test needs,
 and `assert` for the checks.
 

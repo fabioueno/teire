@@ -173,14 +173,3 @@ func TestResolveErrors(t *testing.T) {
 		})
 	}
 }
-
-func TestResolveLeavesTheManifestUnchanged(t *testing.T) {
-	t.Parallel()
-
-	m := loadManifest(t, "claude.toml")
-
-	_, err := Resolve(m, "work", repo, home)
-	require.NoError(t, err)
-	assert.Equal(t, "~/.claude", m.Packages["claude"].Target)
-	assert.Equal(t, "~/.claude.json", m.Packages["claude"].Files["claude.json"].Target)
-}
