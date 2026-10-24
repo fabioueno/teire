@@ -21,8 +21,8 @@ const (
 	Conflict  Action = "conflict"
 )
 
-// Change is the plan for one owned path. Source and Target hold the raw JSON
-// value at the path, or "" when the path is absent.
+// Change is the plan for one owned path. Source and Target hold the JSON value
+// at the path, without comments, or "" when the path is absent.
 type Change struct {
 	Path   string
 	Action Action
@@ -31,11 +31,11 @@ type Change struct {
 }
 
 func PlanMerge(source, target []byte, own []string, last map[string]string) ([]Change, error) {
-	if !gjson.ValidBytes(source) {
+	if !validDocument(source) {
 		return nil, errors.New("source is not valid JSON")
 	}
 
-	if !gjson.ValidBytes(target) {
+	if !validDocument(target) {
 		return nil, errors.New("target is not valid JSON")
 	}
 
@@ -45,13 +45,13 @@ func PlanMerge(source, target []byte, own []string, last map[string]string) ([]C
 			return nil, err
 		}
 
-		src := gjson.GetBytes(source, path)
+		src := lookup(source, path)
 		if !src.Exists() {
 			return nil, fmt.Errorf("owned path %q is not in the source", path)
 		}
 
 		lastHash, known := last[path]
-		changes = append(changes, planOwned(path, src, gjson.GetBytes(target, path), lastHash, known))
+		changes = append(changes, planOwned(path, src, lookup(target, path), lastHash, known))
 	}
 
 	for _, path := range slices.Sorted(maps.Keys(last)) {
@@ -59,7 +59,7 @@ func PlanMerge(source, target []byte, own []string, last map[string]string) ([]C
 			continue
 		}
 
-		changes = append(changes, planReleased(path, gjson.GetBytes(target, path), last[path]))
+		changes = append(changes, planReleased(path, lookup(target, path), last[path]))
 	}
 
 	return changes, nil

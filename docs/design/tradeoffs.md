@@ -24,6 +24,20 @@ byte. That is almost all of the `merge` strategy.
 Revisit when the plan actions and conflict kinds need more checks than the
 `exhaustive` linter gives.
 
+## hujson for JSONC, not a parser of our own
+
+`gjson` and `sjson` reject comments and trailing commas, and editors keep
+their settings in that form. `hujson` parses it and keeps comments, trailing
+commas and spacing in a tree, so a JSON Patch changes one value and leaves
+the bytes around it. Strict JSON stays on `sjson`, which keeps every byte;
+`hujson` joins only when a file is not strict JSON. Moving all files to
+`hujson` was turned down because it also rewrites the spacing next to a
+changed value. Writing a JSONC editor was turned down as more code than
+the strategy needs.
+
+Revisit when `hujson` changes bytes far from the owned path, or when it stops
+being maintained.
+
 ## No copy of `.claude.json`
 
 Claude Code rewrites `.claude.json` every few minutes. The file holds account

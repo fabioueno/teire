@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/tidwall/gjson"
 )
 
 func fixture(t *testing.T, name string) []byte {
@@ -21,7 +20,7 @@ func fixture(t *testing.T, name string) []byte {
 func hashAt(t *testing.T, name, path string) string {
 	t.Helper()
 
-	value := gjson.GetBytes(fixture(t, name), path)
+	value := lookup(fixture(t, name), path)
 	require.True(t, value.Exists(), "%s has %s", name, path)
 
 	return hashValue(value)

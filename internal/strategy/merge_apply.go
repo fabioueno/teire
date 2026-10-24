@@ -7,9 +7,6 @@ import (
 	"io/fs"
 	"os"
 
-	"github.com/tidwall/gjson"
-	"github.com/tidwall/sjson"
-
 	"github.com/fabioueno/teire/internal/fsx"
 )
 
@@ -72,7 +69,7 @@ func splitMoved(data []byte, changes []Change) ([]Change, []string) {
 	for _, c := range changes {
 		switch c.Action {
 		case Set, Delete:
-			if hashValue(gjson.GetBytes(data, c.Path)) != plannedHash(c) {
+			if hashValue(lookup(data, c.Path)) != plannedHash(c) {
 				moved = append(moved, c.Path)
 				continue
 			}
@@ -100,9 +97,9 @@ func applyChanges(data []byte, changes []Change) ([]byte, error) {
 
 		switch c.Action {
 		case Set:
-			out, err = sjson.SetRawBytes(out, c.Path, compact(c.Source))
+			out, err = setPath(out, c.Path, compact(c.Source))
 		case Delete:
-			out, err = sjson.DeleteBytes(out, c.Path)
+			out, err = deletePath(out, c.Path)
 		case Unchanged, Release, Drift, Conflict:
 		}
 
@@ -117,7 +114,7 @@ func applyChanges(data []byte, changes []Change) ([]byte, error) {
 func notKept(written []byte, changes []Change) []string {
 	var paths []string
 	for _, c := range changes {
-		value := gjson.GetBytes(written, c.Path)
+		value := lookup(written, c.Path)
 
 		switch c.Action {
 		case Set:

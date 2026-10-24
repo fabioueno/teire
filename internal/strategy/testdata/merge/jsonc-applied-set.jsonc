@@ -1,0 +1,11 @@
+// Zed settings
+{
+	"theme": "One Dark", // keep this
+  "context_servers": {
+        "github": {"url": "https://github.example/mcp"}, // gh
+"notes":{"url":"https://notes.example/mcp","enabled":true}
+   },
+   /* odd */ "projects": {
+      "other": {"trusted": false},"a.b":{"trusted":true},"x/y~z":{"trusted":true}
+   },
+}
