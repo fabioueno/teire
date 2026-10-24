@@ -1,0 +1,9 @@
+claude
+  merge     ~/.claude.json
+    set       mcpServers.notes
+zsh
+  conflict  ~/.zshrc  (has different content)
+  missing   ~/.zprofile  (the target does not exist; start its program once)
+(removed from the manifest)
+  remove    ~/.config/nvim
+4 to change, 1 conflicts, 1 unchanged.

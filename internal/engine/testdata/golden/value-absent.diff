@@ -1,0 +1,7 @@
+--- target mcpServers.notes
++++ source mcpServers.notes
+@@ -0,0 +1,4 @@
++{
++  "type": "http",
++  "url": "https://notes.example/mcp"
++}

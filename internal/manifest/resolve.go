@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/fs"
 	"maps"
-	"path"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -48,47 +47,33 @@ func Resolve(m Manifest, host string, repo fs.FS, home string) ([]Target, error)
 }
 
 func resolvePackage(name string, p Package, repo fs.FS, home string) ([]Target, error) {
-	source := p.Source
-	if source == "" {
-		source = name
-	}
-
-	source = path.Clean(source)
-
-	if p.Target == "" {
-		return nil, errors.New("target is required")
-	}
-
-	target, err := expandTarget(p.Target, home)
+	pkg, err := resolveHead(name, p, home)
 	if err != nil {
 		return nil, err
 	}
 
-	info, err := fs.Stat(repo, source)
+	info, err := fs.Stat(repo, pkg.Source)
 	if err != nil {
-		return nil, fmt.Errorf("source folder %q: %w", source, err)
+		return nil, fmt.Errorf("source folder %q: %w", pkg.Source, err)
 	}
+
 	if !info.IsDir() {
-		return nil, fmt.Errorf("source %q is not a folder", source)
+		return nil, fmt.Errorf("source %q is not a folder", pkg.Source)
 	}
 
-	strategy := p.Strategy
-	if strategy == "" {
-		strategy = Link
-	}
-
-	switch strategy {
+	switch pkg.Strategy {
 	case Folder:
 		if len(p.Files) > 0 {
 			return nil, errors.New(`file entries are not valid with strategy "folder"`)
 		}
-		return []Target{{Package: name, Source: source, Path: target, Strategy: Folder}}, nil
+
+		return []Target{{Package: name, Source: pkg.Source, Path: pkg.Target, Strategy: Folder}}, nil
 	case Link:
-		return resolveFiles(name, source, target, p.Files, repo, home)
+		return resolveFiles(name, pkg.Source, pkg.Target, p.Files, repo, home)
 	case Merge:
 		return nil, errors.New(`strategy "merge" is only valid for a file entry`)
 	default:
-		return nil, fmt.Errorf("unknown strategy %q", strategy)
+		return nil, fmt.Errorf("unknown strategy %q", pkg.Strategy)
 	}
 }
 

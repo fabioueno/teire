@@ -12,6 +12,8 @@ import (
 
 type LinkAction string
 
+const ReasonDifferentContent = "has different content"
+
 const (
 	LinkUnchanged LinkAction = "unchanged"
 	LinkCreate    LinkAction = "create"
@@ -36,7 +38,7 @@ type LinkChange struct {
 func PlanLink(path, source, repo string, folder bool) (LinkChange, error) {
 	c := LinkChange{Path: path, Source: source}
 
-	inside, err := resolvesInto(filepath.Dir(path), repo)
+	inside, err := ResolvesInto(filepath.Dir(path), repo)
 	if err != nil {
 		return LinkChange{}, err
 	}
@@ -108,7 +110,7 @@ func planOverFile(c LinkChange) (LinkChange, error) {
 		return c, nil
 	}
 
-	c.Action, c.Reason = LinkConflict, "has different content"
+	c.Action, c.Reason = LinkConflict, ReasonDifferentContent
 	return c, nil
 }
 
@@ -138,10 +140,10 @@ func sameFile(a, b string) bool {
 	return os.SameFile(ia, ib)
 }
 
-// resolvesInto reports whether dir, or the nearest folder above it that
+// ResolvesInto reports whether dir, or the nearest folder above it that
 // exists, resolves to a place inside repo. A link made there would land in
 // the repository itself.
-func resolvesInto(dir, repo string) (bool, error) {
+func ResolvesInto(dir, repo string) (bool, error) {
 	root, err := filepath.EvalSymlinks(repo)
 	if err != nil {
 		return false, fmt.Errorf("resolve repository %s: %w", repo, err)

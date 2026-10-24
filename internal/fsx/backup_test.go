@@ -30,3 +30,21 @@ func TestBackupMovesTheTargetUnderItsOwnPath(t *testing.T) {
 	_, err = os.Lstat(path)
 	assert.ErrorIs(t, err, os.ErrNotExist)
 }
+
+func TestBackupCopyKeepsTheOriginal(t *testing.T) {
+	t.Parallel()
+
+	dir := t.TempDir()
+	path := filepath.Join(dir, "home", ".claude.json")
+	root := filepath.Join(dir, "backups", "20261024T101500Z")
+	require.NoError(t, os.MkdirAll(filepath.Dir(path), 0o755))
+	require.NoError(t, os.WriteFile(path, []byte("{}"), 0o600))
+
+	require.NoError(t, BackupCopy(path, root))
+
+	for _, p := range []string{path, filepath.Join(root, path)} {
+		info, err := os.Stat(p)
+		require.NoError(t, err)
+		assert.Equal(t, os.FileMode(0o600), info.Mode().Perm(), p)
+	}
+}
