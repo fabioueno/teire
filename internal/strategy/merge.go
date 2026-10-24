@@ -32,11 +32,11 @@ type Change struct {
 
 func PlanMerge(source, target []byte, own []string, last map[string]string) ([]Change, error) {
 	if !validDocument(source) {
-		return nil, errors.New("source is not valid JSON")
+		return nil, errors.New("source is not valid JSON or JSONC")
 	}
 
 	if !validDocument(target) {
-		return nil, errors.New("target is not valid JSON")
+		return nil, errors.New("target is not valid JSON or JSONC")
 	}
 
 	changes := make([]Change, 0, len(own)+len(last))

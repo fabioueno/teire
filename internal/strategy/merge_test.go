@@ -61,8 +61,8 @@ func TestPlanMergeErrors(t *testing.T) {
 	}{
 		{name: "path not in source", source: "source.json", target: "target-same.json", own: []string{"mcpServers.github"}, wantErr: `owned path "mcpServers.github" is not in the source`},
 		{name: "query syntax in a path", source: "source.json", target: "target-same.json", own: []string{"mcpServers.*"}, wantErr: "uses query syntax"},
-		{name: "invalid source", source: "invalid.json", target: "target-same.json", own: []string{notes}, wantErr: "source is not valid JSON"},
-		{name: "invalid target", source: "source.json", target: "invalid.json", own: []string{notes}, wantErr: "target is not valid JSON"},
+		{name: "invalid source", source: "invalid.json", target: "target-same.json", own: []string{notes}, wantErr: "source is not valid JSON or JSONC"},
+		{name: "invalid target", source: "source.json", target: "invalid.json", own: []string{notes}, wantErr: "target is not valid JSON or JSONC"},
 	}
 
 	for _, tc := range tests {
