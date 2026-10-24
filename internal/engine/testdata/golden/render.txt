@@ -6,4 +6,4 @@ zsh
   missing   ~/.zprofile  (the target does not exist; start its program once)
 (no longer managed)
   remove    ~/.config/nvim
-4 to change, 1 conflicts, 1 unchanged.
+4 to change, 1 conflict, 1 unchanged.

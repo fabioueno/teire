@@ -53,7 +53,7 @@ func runPrune(cmd *cobra.Command, e env.Env, keep int) error {
 	out := cmd.OutOrStdout()
 
 	if len(names) <= keep {
-		_, err := fmt.Fprintf(out, "Nothing to prune (%s, keeping %d).\n", count(len(names)), keep)
+		_, err := fmt.Fprintf(out, "Nothing to prune (%s, keeping %d).\n", engine.Plural(len(names), "backup"), keep)
 
 		return err
 	}
@@ -71,7 +71,7 @@ func runPrune(cmd *cobra.Command, e env.Env, keep int) error {
 		}
 	}
 
-	_, err = fmt.Fprintf(out, "Removed %s, kept %d.\n", count(len(stale)), keep)
+	_, err = fmt.Fprintf(out, "Removed %s, kept %d.\n", engine.Plural(len(stale), "backup"), keep)
 
 	return err
 }
@@ -103,12 +103,4 @@ func backupNames(dir string) ([]string, error) {
 	slices.Sort(names)
 
 	return names, nil
-}
-
-func count(n int) string {
-	if n == 1 {
-		return "1 backup"
-	}
-
-	return fmt.Sprintf("%d backups", n)
 }

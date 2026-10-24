@@ -95,7 +95,7 @@ func runApply(cmd *cobra.Command, d deps, opts *options, yes bool) error {
 	}
 
 	if result.Skipped > 0 && !interactive {
-		return &exitError{code: 2, err: fmt.Errorf("%d conflicts left; run teire apply on a terminal to resolve them", result.Skipped)}
+		return &exitError{code: 2, err: fmt.Errorf("%s left; run teire apply on a terminal to resolve them", engine.Plural(result.Skipped, "conflict"))}
 	}
 
 	return nil
@@ -123,7 +123,7 @@ func report(w io.Writer, r engine.Result, home string) error {
 	}
 
 	if r.Skipped > 0 {
-		fmt.Fprintf(&b, "%d conflicts skipped.\n", r.Skipped)
+		fmt.Fprintf(&b, "%s skipped.\n", engine.Plural(r.Skipped, "conflict"))
 	}
 
 	b.WriteString("Applied.\n")

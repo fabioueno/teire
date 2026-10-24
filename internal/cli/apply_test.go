@@ -91,7 +91,7 @@ func TestConflictWithoutATerminalIsLeftAlone(t *testing.T) {
 
 	_, err = h.run("apply", "--yes")
 	assert.Equal(t, 2, exitCode(t, err))
-	assert.ErrorContains(t, err, "1 conflicts left")
+	assert.ErrorContains(t, err, "1 conflict left")
 
 	assert.Equal(t, "export EDITOR=vim\n", h.read(filepath.Join(h.home, ".zshrc")))
 	assert.Equal(t, filepath.Join(h.repo, "nvim"), h.readlink(filepath.Join(h.home, ".config", "nvim")))
