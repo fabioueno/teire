@@ -11,7 +11,11 @@ import (
 
 func main() {
 	if err := cli.NewRoot().Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, "teire:", err)
-		os.Exit(1)
+		code, show := cli.ExitCode(err)
+		if show {
+			fmt.Fprintln(os.Stderr, "teire:", err)
+		}
+
+		os.Exit(code)
 	}
 }

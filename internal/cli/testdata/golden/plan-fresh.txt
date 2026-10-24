@@ -1,0 +1,10 @@
+claude
+  merge     ~/.claude.json
+    set       mcpServers.notes
+  create    ~/.claude/CLAUDE.md
+  create    ~/.claude/settings.json
+nvim
+  create    ~/.config/nvim
+zsh
+  create    ~/.zshrc
+5 to change, 0 conflicts, 0 unchanged.

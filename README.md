@@ -12,7 +12,8 @@ changes.
 
 ## Status
 
-Early development. Only `teire version` works today.
+Early development. `init`, `plan`, `apply` and `adopt` work for `link`,
+`folder` and `merge` targets.
 
 ## Documentation
 

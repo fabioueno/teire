@@ -1,0 +1,9 @@
+{
+  "numStartups": 3,
+  "mcpServers": {
+    "notes": {
+      "type": "http",
+      "url": "https://notes.example/mcp?debug=1"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+[package.zsh]
+target = "~"
+
+[package.nvim]
+target   = "~/.config/nvim"
+strategy = "folder"
+
+[package.claude]
+target = "~/.claude"
+
+[package.claude.file."claude.json"]
+strategy = "merge"
+target   = "~/.claude.json"
+own      = ["mcpServers.notes"]
+
+[host.work.package.claude]
+target = "~/.claude-work"
+
+[host.work.package.claude.file."claude.json"]
+target = "~/.claude-work/.claude.json"

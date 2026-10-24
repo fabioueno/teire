@@ -72,33 +72,43 @@ The state of the last apply is in `$XDG_STATE_HOME/teire/state.json`, with one
 entry for each absolute target path. The state is per machine, so it stays out
 of the repository.
 
-| Source  | Target  | Action                                       |
-| ------- | ------- | -------------------------------------------- |
-| same    | same    | Nothing.                                     |
-| changed | same    | Write the target.                            |
-| same    | changed | Report it.                                   |
-| changed | changed | Ask on a terminal. Without one, exit with 2. |
+| Source  | Target  | Action                                 |
+| ------- | ------- | -------------------------------------- |
+| same    | same    | Nothing.                               |
+| changed | same    | Write the target.                      |
+| same    | changed | Report it, and leave the target alone. |
+| changed | changed | A conflict.                            |
 
 Without state, Teire sets an owned path that the target does not have, and
-treats each other difference as a conflict. Before each
-overwrite, Teire saves the old target in
+treats each other difference as a conflict.
+
+On a terminal, `apply` asks about each conflict: show the diff, overwrite the
+target, or skip it. Without a terminal, `apply` skips each conflict, applies
+the rest, and exits with 2.
+
+Before Teire overwrites or merges into a target, it saves the old target in
 `$XDG_STATE_HOME/teire/backups/<timestamp>/`.
 
 ## Commands
 
 - `plan` shows each change and conflict, and writes nothing. It runs when no
-  command is given. It exits with 0 for no changes, 1 for changes, and 2 for
-  conflicts.
-- `apply` runs the plan and asks once on a terminal, then writes. `--yes`
-  skips the question.
-- `adopt <path>` moves a file into its package folder and links it.
+  command is given. It exits with 0 when all is in place, 1 for changes, and 2
+  for conflicts.
+- `apply` shows the plan, asks once on a terminal, then writes. `--yes` skips
+  the question, and is needed when stdin is not a terminal.
+- `adopt <path>` moves a plain file into the source folder of the deepest link
+  package whose target holds it, then links the file back.
 - `init --host <name>` writes the host file.
+
+Teire finds the repository from `--repo`, or else from the nearest folder at or
+above the current one that holds `teire.toml`.
 
 ## Packages
 
 ```mermaid
 flowchart TD
   main[cmd/teire] --> cli
+  cli -->|folders| env
   cli -->|name| host
   cli -->|load, resolve| manifest
   cli -->|targets| engine
@@ -113,6 +123,7 @@ The packages follow these boundaries:
 - `cmd/teire` calls only `internal/cli`.
 - `internal/cli` is the only package that imports cobra. Its commands call the
   other packages through plain functions.
+- `internal/env` is the only package that reads environment variables.
 - `internal/fsx` is the only package that writes to disk.
-- Each package gets the home folder, the state folder and the host from an
+- Each package gets the home, repository, state and config folders from an
   `Env` parameter. So tests run each package against a temporary home.
