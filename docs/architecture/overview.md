@@ -81,7 +81,9 @@ such as the history and caches in `~/.claude`, stays out of the repository.
   the file again on its next write.
 - It keeps the file mode, and replaces the file with an atomic rename.
 - After the write, it reads the file again and reports each owned value that
-  did not stay.
+  did not stay. A running Claude Code session keeps the keys that Teire
+  writes: its next rewrite of `.claude.json` carries them, so a merge does not
+  need Claude Code closed.
 - It deletes a path that left `own` only if state shows that Teire set it.
 - It does not create a target file that does not exist.
 
