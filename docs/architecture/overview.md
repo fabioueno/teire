@@ -93,9 +93,10 @@ Before Teire overwrites or merges into a target, it saves the old target in
 
 ## Commands
 
-- `plan` shows each change and conflict, and writes nothing. It runs when no
-  command is given. It exits with 0 when all is in place, 1 for changes, and 2
-  for conflicts.
+- `plan` shows each change and conflict, and writes nothing. It lists them by
+  package, with entries that left the manifest last. It runs when no command
+  is given. It exits with 0 when all is in place, 1 for changes, and 2 for
+  conflicts.
 - `apply` shows the plan, asks once on a terminal, then writes. `--yes` skips
   the question, and is needed when stdin is not a terminal.
 - `adopt <path>` moves a plain file into the source folder of the deepest link

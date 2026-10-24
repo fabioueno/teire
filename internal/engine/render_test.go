@@ -93,3 +93,19 @@ func TestRenderWhenInPlace(t *testing.T) {
 
 	assert.Equal(t, "Everything is in place (1 targets).\n", out.String())
 }
+
+func TestRenderShowsEachPackageOnce(t *testing.T) {
+	t.Parallel()
+
+	create := strategy.LinkChange{Action: strategy.LinkCreate}
+	p := Plan{Items: []Item{
+		{Package: "zsh", Path: renderHome + "/.hushlogin", Strategy: manifest.Link, Link: create},
+		{Package: "git", Path: renderHome + "/.gitconfig", Strategy: manifest.Link, Link: create},
+		{Package: "zsh", Path: renderHome + "/.zshrc", Strategy: manifest.Link, Link: create},
+	}}
+
+	var out bytes.Buffer
+	require.NoError(t, Render(&out, p, renderHome))
+
+	assert.Equal(t, golden(t, "render-grouped.txt"), out.String())
+}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/fabioueno/teire/internal/manifest"
@@ -20,7 +21,7 @@ func Render(w io.Writer, p Plan, home string) error {
 	heading := ""
 	unchanged := 0
 
-	for _, item := range p.Items {
+	for _, item := range displayOrder(p.Items) {
 		if !item.Changed() {
 			unchanged++
 			continue
@@ -44,6 +45,25 @@ func Render(w io.Writer, p Plan, home string) error {
 	_, err := io.WriteString(w, b.String())
 
 	return err
+}
+
+// displayOrder groups items by package, with entries that left the manifest
+// last, so each package heading appears once.
+func displayOrder(items []Item) []Item {
+	sorted := slices.Clone(items)
+	slices.SortStableFunc(sorted, func(a, b Item) int {
+		if a.Removed != b.Removed {
+			if a.Removed {
+				return 1
+			}
+
+			return -1
+		}
+
+		return strings.Compare(a.Package, b.Package)
+	})
+
+	return sorted
 }
 
 func renderItem(b *strings.Builder, item Item, home string) {
