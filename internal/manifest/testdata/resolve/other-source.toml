@@ -1,0 +1,3 @@
+[package.prompt]
+source = "starship"
+target = "/etc/xdg"

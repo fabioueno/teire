@@ -1,0 +1,5 @@
+[package.claude]
+target = "~/.claude"
+
+[package.claude.file."claude.json"]
+own = ["mcpServers"]

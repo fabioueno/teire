@@ -1,0 +1,3 @@
+[package.nvim]
+target   = "~/.config/nvim"
+strategy = "folder"

@@ -1,0 +1,2 @@
+[host.work.package.starship]
+target = "~/.config"

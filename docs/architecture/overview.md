@@ -85,6 +85,7 @@ overwrite, Teire saves the old target in
 ```mermaid
 flowchart TD
   main[cmd/teire] --> cli
+  cli -->|name| host
   cli -->|load, resolve| manifest
   cli -->|targets| engine
   engine -->|read, record| state

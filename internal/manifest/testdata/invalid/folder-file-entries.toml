@@ -1,0 +1,6 @@
+[package.nvim]
+target   = "~/.config/nvim"
+strategy = "folder"
+
+[package.nvim.file."init.lua"]
+target = "~/init.lua"

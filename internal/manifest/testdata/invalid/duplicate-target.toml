@@ -1,0 +1,6 @@
+[package.claude]
+target = "~/.claude"
+
+[package.copy]
+source = "claude"
+target = "~/.claude"
