@@ -64,6 +64,16 @@ func TestPlanLink(t *testing.T) {
 			wantReason: "links to ",
 		},
 		{
+			name:   "link to a path that no longer exists",
+			target: ".claude/settings.json",
+			source: settings,
+			setup: func(t *testing.T, home string) {
+				symlink(t, filepath.Join(home, ".dotfiles", "settings.json"), filepath.Join(home, ".claude", "settings.json"))
+			},
+			want:       LinkReplace,
+			wantReason: "links to a missing path",
+		},
+		{
 			name:   "plain file with the same content",
 			target: ".claude/settings.json",
 			source: settings,

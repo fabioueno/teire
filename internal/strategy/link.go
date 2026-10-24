@@ -90,6 +90,13 @@ func planOverLink(c LinkChange) (LinkChange, error) {
 		return c, nil
 	}
 
+	// A dangling link holds no data, so replacing it loses nothing. Moving
+	// files inside the repository leaves links like these behind.
+	if _, err := os.Stat(c.Path); errors.Is(err, fs.ErrNotExist) {
+		c.Action, c.Reason = LinkReplace, "links to a missing path "+dest
+		return c, nil
+	}
+
 	c.Action, c.Reason = LinkConflict, "links to "+dest
 	return c, nil
 }
