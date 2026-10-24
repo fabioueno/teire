@@ -74,10 +74,13 @@ teire apply    # asks once, then links everything
 ```
 
 Add a `teire.toml` at the root only for what differs from the defaults: a
-package Teire does not know, a file that needs `merge`, or a machine with its
-own targets.
+package Teire does not know, a known folder to leave unlinked, a file that needs
+`merge`, or a machine with its own targets.
 
 ```toml
+# Keep the zed folder in the repository, but do not link it.
+ignore = ["zed"]
+
 # Own one MCP server in ~/.claude.json, and leave every other key alone.
 [package.claude.file."claude.json"]
 strategy = "merge"

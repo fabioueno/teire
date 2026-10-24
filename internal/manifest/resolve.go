@@ -23,7 +23,10 @@ type Target struct {
 const finderMetadata = ".DS_Store"
 
 func Resolve(m Manifest, host string, repo fs.FS, home string) ([]Target, error) {
-	packages := withHost(m, host, repo)
+	packages, err := withHost(m, host, repo)
+	if err != nil {
+		return nil, err
+	}
 
 	var targets []Target
 	for _, name := range slices.Sorted(maps.Keys(packages)) {

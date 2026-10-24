@@ -156,6 +156,30 @@ func TestPackageWhoseFolderIsGoneIsUnlinked(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestIgnoredPackageIsUnlinked(t *testing.T) {
+	t.Parallel()
+
+	h := newHarness(t)
+	_, err := h.run("apply", "--yes")
+	require.NoError(t, err)
+
+	h.copyFile("manifests/ignore-nvim.toml", filepath.Join(h.repo, "teire.toml"))
+
+	out, err := h.run("plan")
+	assert.Equal(t, 1, exitCode(t, err))
+	assert.Contains(t, out, "(no longer managed)\n  remove    ~/.config/nvim\n")
+
+	_, err = h.run("apply", "--yes")
+	require.NoError(t, err)
+
+	_, statErr := os.Lstat(filepath.Join(h.home, ".config", "nvim"))
+	assert.ErrorIs(t, statErr, os.ErrNotExist)
+	assert.DirExists(t, filepath.Join(h.repo, "nvim"))
+
+	_, err = h.run("plan")
+	assert.NoError(t, err)
+}
+
 func TestMergeConflict(t *testing.T) {
 	t.Parallel()
 

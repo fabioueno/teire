@@ -1,0 +1,5 @@
+[package.nvim]
+target = "~/.nvim"
+
+[host.work]
+ignore = ["nvim"]

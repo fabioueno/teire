@@ -19,6 +19,7 @@ const (
 )
 
 type Manifest struct {
+	Ignore   []string           `toml:"ignore"`
 	Packages map[string]Package `toml:"package"`
 	Hosts    map[string]Host    `toml:"host"`
 }
@@ -37,6 +38,7 @@ type File struct {
 }
 
 type Host struct {
+	Ignore   []string           `toml:"ignore"`
 	Packages map[string]Package `toml:"package"`
 }
 

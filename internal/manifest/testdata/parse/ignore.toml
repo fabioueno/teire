@@ -1,0 +1,4 @@
+ignore = ["nvim", "zed"]
+
+[host.work]
+ignore = ["zsh"]

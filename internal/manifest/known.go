@@ -37,8 +37,8 @@ func defaultsFor(name string) Package {
 }
 
 // discover adds a package for each known folder in the repository that no
-// declared package uses as its source.
-func discover(packages map[string]Package, repo fs.FS) {
+// declared package uses as its source and that is not ignored.
+func discover(packages map[string]Package, repo fs.FS, ignored map[string]bool) {
 	used := make(map[string]bool, len(packages))
 	for name, p := range packages {
 		source := p.Source
@@ -50,7 +50,7 @@ func discover(packages map[string]Package, repo fs.FS) {
 	}
 
 	for name := range known {
-		if _, declared := packages[name]; declared || used[name] {
+		if _, declared := packages[name]; declared || used[name] || ignored[name] {
 			continue
 		}
 

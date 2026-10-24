@@ -18,7 +18,10 @@ type ResolvedPackage struct {
 }
 
 func Packages(m Manifest, host string, repo fs.FS, home string) ([]ResolvedPackage, error) {
-	packages := withHost(m, host, repo)
+	packages, err := withHost(m, host, repo)
+	if err != nil {
+		return nil, err
+	}
 
 	resolved := make([]ResolvedPackage, 0, len(packages))
 	for _, name := range slices.Sorted(maps.Keys(packages)) {
