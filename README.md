@@ -101,6 +101,7 @@ target = "~/.claude-work/.claude.json"
 | -------------------- | ------------------------------------------------------------------- |
 | `teire plan`         | Shows each change and conflict, and writes nothing.                 |
 | `teire apply`        | Shows the plan, asks once, then writes. `--yes` skips the question. |
+| `teire pull [path]`  | Brings owned keys changed in a `merge` target back into the repo.   |
 | `teire adopt <path>` | Moves an existing file into its package and links it back.          |
 | `teire init --host`  | Names this machine, for the host sections in `teire.toml`.          |
 | `teire prune`        | Removes all but the 10 newest backups. `--keep N` changes the 10.   |

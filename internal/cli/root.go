@@ -33,6 +33,7 @@ func newRoot(d deps) *cobra.Command {
 		newApply(d, opts),
 		newAdopt(d, opts),
 		newPrune(d),
+		newPull(d, opts),
 	)
 
 	return root

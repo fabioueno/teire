@@ -80,3 +80,25 @@ func golden(t *testing.T, name string) string {
 
 	return string(data)
 }
+
+// applied applies the targets to the world and gives the state it recorded.
+func (w world) applied() state.State {
+	w.t.Helper()
+
+	p, err := Build(w.env, w.targets(), emptyState())
+	require.NoError(w.t, err)
+
+	st, _, err := Apply(w.env, p, emptyState(), func(Conflict) (Choice, error) { return Skip, nil }, now)
+	require.NoError(w.t, err)
+
+	return st
+}
+
+// replaceLink swaps the link at path for a plain file, the way a program does
+// when it writes a temporary file and renames it over the link.
+func (w world) replaceLink(path, fixture string) {
+	w.t.Helper()
+
+	require.NoError(w.t, os.Remove(path))
+	w.copyFile(fixture, path)
+}

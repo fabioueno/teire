@@ -60,3 +60,12 @@ func symlink(t *testing.T, source, path string) {
 }
 
 const notes = "mcpServers.notes"
+
+func readFile(t *testing.T, path string) string {
+	t.Helper()
+
+	data, err := os.ReadFile(path)
+	require.NoError(t, err)
+
+	return string(data)
+}

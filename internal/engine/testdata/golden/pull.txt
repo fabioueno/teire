@@ -1,0 +1,3 @@
+  pull      ~/.claude.json  (mcpServers.notes)
+  left      ~/.claude-work/.claude.json  (mcpServers.notes changed in both)
+1 pulled, 1 left.
