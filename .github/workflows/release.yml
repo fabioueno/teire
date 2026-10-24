@@ -72,8 +72,12 @@ jobs:
   formula:
     name: Update the Homebrew formula
     needs: release
-    runs-on: ubuntu-24.04
-    timeout-minutes: 3
+    runs-on: macos-15
+    timeout-minutes: 20
+
+    env:
+      TAG: ${{ needs.release.outputs.tag }}
+      HOMEBREW_NO_AUTO_UPDATE: "1"
 
     steps:
       - name: Checkout tap
@@ -86,21 +90,20 @@ jobs:
         shell: bash
         run: |
           URL="https://github.com/${GITHUB_REPOSITORY}/archive/refs/tags/${TAG}.tar.gz"
-          SHA256=$(curl -fsSL "$URL" | sha256sum | cut -d ' ' -f 1)
+          SHA256=$(curl -fsSL "$URL" | shasum -a 256 | cut -d ' ' -f 1)
 
-          sed -i -E \
+          sed -i.bak -E \
             -e "s|^  url \".*\"$|  url \"${URL}\"|" \
             -e "s|^  sha256 \".*\"$|  sha256 \"${SHA256}\"|" \
             Formula/teire.rb
+          rm Formula/teire.rb.bak
 
           if git diff --quiet Formula/teire.rb; then
             echo "::error::Formula/teire.rb did not change"
             exit 1
           fi
-        env:
-          TAG: ${{ needs.release.outputs.tag }}
 
-      - name: Commit and push
+      - name: Commit the formula
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
@@ -108,6 +111,16 @@ jobs:
           git commit -a \
             -m "chore(teire): update to ${TAG#v}" \
             -m "Point the formula at the ${TAG} source archive."
-          git push
-        env:
-          TAG: ${{ needs.release.outputs.tag }}
+
+      # brew tap clones the committed checkout, so the formula is built and
+      # tested before the push makes it installable.
+      - name: Build and test the formula
+        shell: bash
+        run: |
+          brew tap fabioueno/tap "$PWD"
+          brew install --build-from-source fabioueno/tap/teire
+          brew test fabioueno/tap/teire
+
+      - name: Push the formula
+        shell: bash
+        run: git push

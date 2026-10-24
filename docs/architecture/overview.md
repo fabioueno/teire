@@ -148,8 +148,12 @@ formula in `fabioueno/homebrew-tap`:
 
 1. It downloads the source archive that GitHub serves for the new tag, and
    computes its SHA-256.
-2. It writes the archive URL and the checksum into `Formula/teire.rb`.
-3. It pushes that change to the tap with a deploy key, kept in the
+2. It writes the archive URL and the checksum into `Formula/teire.rb`, and
+   commits the change.
+3. On a macOS runner, it taps that commit, builds Teire from source with
+   Homebrew, and runs the formula's test. A failure stops the job, and the tap
+   keeps the last version that built.
+4. It pushes the commit to the tap with a deploy key, kept in the
    `TAP_DEPLOY_KEY` secret, because the workflow's own token can write only to
    this repository.
 
