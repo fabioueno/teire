@@ -34,6 +34,19 @@ defaults to `~/.config/<name>` with `files`. An entry changes only what differs
 from these defaults. A known folder that a declared package uses as its
 `source` is not a package of its own.
 
+The `ignore` list stops a known folder from becoming a package. It does not
+touch a declared package: a name that is both declared and ignored is an error.
+A host section has its own `ignore` list, which adds to the base list on that
+machine. A package that was applied before and is now ignored is no longer
+managed, so the next apply removes its links.
+
+```toml
+ignore = ["nvim", "zed"]
+
+[host.work]
+ignore = ["zsh"]
+```
+
 Each file in a package uses the package strategy. A file needs its own entry
 only when it differs from its package.
 

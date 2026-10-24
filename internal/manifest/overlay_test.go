@@ -51,7 +51,9 @@ func TestWithHost(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			assert.Equal(t, tc.want, withHost(m, tc.host, repoWith("claude")))
+			got, err := withHost(m, tc.host, repoWith("claude"))
+			require.NoError(t, err)
+			assert.Equal(t, tc.want, got)
 		})
 	}
 }
@@ -59,7 +61,40 @@ func TestWithHost(t *testing.T) {
 func TestWithHostAddsAPackage(t *testing.T) {
 	t.Parallel()
 
-	got := withHost(loadManifest(t, "resolve/host-adds-package.toml"), "work", repoWith("myapp"))
+	got, err := withHost(loadManifest(t, "resolve/host-adds-package.toml"), "work", repoWith("myapp"))
 
+	require.NoError(t, err)
 	assert.Equal(t, map[string]Package{"myapp": {}}, got)
+}
+
+func TestWithHostIgnore(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		host string
+		want map[string]Package
+	}{
+		{
+			name: "the base list stops discovery",
+			host: "MacBook-Pro",
+			want: map[string]Package{"zsh": {}},
+		},
+		{
+			name: "a host list adds to the base list",
+			host: "work",
+			want: map[string]Package{},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			got, err := withHost(loadManifest(t, "resolve/ignore-host.toml"), tc.host, repoWith("nvim", "zsh"))
+
+			require.NoError(t, err)
+			assert.Equal(t, tc.want, got)
+		})
+	}
 }

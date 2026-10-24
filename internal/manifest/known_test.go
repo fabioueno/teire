@@ -35,6 +35,7 @@ func TestDiscover(t *testing.T) {
 	tests := []struct {
 		name     string
 		declared map[string]Package
+		ignored  map[string]bool
 		folders  []string
 		want     map[string]Package
 	}{
@@ -61,6 +62,12 @@ func TestDiscover(t *testing.T) {
 			want:     map[string]Package{"prompt": {Source: "starship", Target: "/etc/xdg"}},
 		},
 		{
+			name:    "an ignored folder is left alone",
+			ignored: map[string]bool{"zsh": true},
+			folders: []string{"nvim", "zsh"},
+			want:    map[string]Package{"nvim": {}},
+		},
+		{
 			name: "a known name without a folder is left alone",
 			want: map[string]Package{},
 		},
@@ -73,7 +80,7 @@ func TestDiscover(t *testing.T) {
 			packages := map[string]Package{}
 			maps.Copy(packages, tc.declared)
 
-			discover(packages, repoWith(tc.folders...))
+			discover(packages, repoWith(tc.folders...), tc.ignored)
 
 			assert.Equal(t, tc.want, packages)
 		})

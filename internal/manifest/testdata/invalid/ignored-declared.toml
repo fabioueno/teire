@@ -1,0 +1,4 @@
+ignore = ["nvim"]
+
+[package.nvim]
+target = "~/.nvim"

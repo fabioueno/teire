@@ -33,6 +33,15 @@ func TestParseReadsPackagesFilesAndHosts(t *testing.T) {
 	}, m)
 }
 
+func TestParseReadsIgnore(t *testing.T) {
+	t.Parallel()
+
+	m := loadManifest(t, "parse/ignore.toml")
+
+	assert.Equal(t, []string{"nvim", "zed"}, m.Ignore)
+	assert.Equal(t, []string{"zsh"}, m.Hosts["work"].Ignore)
+}
+
 func TestParseErrors(t *testing.T) {
 	t.Parallel()
 

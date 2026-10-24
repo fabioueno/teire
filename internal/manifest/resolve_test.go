@@ -101,6 +101,31 @@ func TestResolve(t *testing.T) {
 			},
 		},
 		{
+			name:     "an ignored known folder is not a package",
+			manifest: "resolve/ignore.toml",
+			folders:  []string{"nvim", "zsh"},
+			want: []Target{
+				{Package: "zsh", Source: "zsh/.zsh/10-env.zsh", Path: home + "/.zsh/10-env.zsh", Strategy: Files},
+				{Package: "zsh", Source: "zsh/.zshrc", Path: home + "/.zshrc", Strategy: Files},
+			},
+		},
+		{
+			name:     "a host list adds to the base list",
+			manifest: "resolve/ignore-host.toml",
+			host:     "work",
+			folders:  []string{"nvim", "zsh"},
+		},
+		{
+			name:     "a host list leaves other hosts alone",
+			manifest: "resolve/ignore-host.toml",
+			host:     "MacBook-Pro",
+			folders:  []string{"nvim", "zsh"},
+			want: []Target{
+				{Package: "zsh", Source: "zsh/.zsh/10-env.zsh", Path: home + "/.zsh/10-env.zsh", Strategy: Files},
+				{Package: "zsh", Source: "zsh/.zshrc", Path: home + "/.zshrc", Strategy: Files},
+			},
+		},
+		{
 			name:     "an unknown folder needs an entry",
 			manifest: "resolve/empty.toml",
 			folders:  []string{"myapp"},
@@ -132,8 +157,26 @@ func TestResolveErrors(t *testing.T) {
 	tests := []struct {
 		name     string
 		manifest string
+		host     string
 		wantErr  string
 	}{
+		{
+			name:     "declared and ignored",
+			manifest: "invalid/ignored-declared.toml",
+			wantErr:  `package "nvim" is both declared and ignored`,
+		},
+		{
+			name:     "declared in a host section and ignored",
+			manifest: "invalid/ignored-declared-host.toml",
+			host:     "work",
+			wantErr:  `package "nvim" is both declared and ignored`,
+		},
+		{
+			name:     "declared and ignored by a host",
+			manifest: "invalid/host-ignored-declared.toml",
+			host:     "work",
+			wantErr:  `package "nvim" is both declared and ignored`,
+		},
 		{
 			name:     "relative target",
 			manifest: "invalid/relative-target.toml",
@@ -195,7 +238,7 @@ func TestResolveErrors(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			_, err := Resolve(loadManifest(t, tc.manifest), "", repo, home)
+			_, err := Resolve(loadManifest(t, tc.manifest), tc.host, repo, home)
 			assert.ErrorContains(t, err, tc.wantErr)
 		})
 	}
