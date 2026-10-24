@@ -8,7 +8,8 @@
       }
     },
     "/Users/test/.claude/settings.json": {
-      "strategy": "link"
+      "strategy": "link",
+      "source": "/Users/test/dotfiles/claude/settings.json"
     }
   }
 }

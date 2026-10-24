@@ -22,6 +22,7 @@ type State struct {
 
 type Entry struct {
 	Strategy manifest.Strategy `json:"strategy"`
+	Source   string            `json:"source,omitempty"`
 	Owned    map[string]string `json:"owned,omitempty"`
 }
 

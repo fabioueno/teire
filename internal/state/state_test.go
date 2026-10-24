@@ -16,7 +16,10 @@ var saved = State{Targets: map[string]Entry{
 		Strategy: manifest.Merge,
 		Owned:    map[string]string{"mcpServers.notes": "4f2d"},
 	},
-	"/Users/test/.claude/settings.json": {Strategy: manifest.Link},
+	"/Users/test/.claude/settings.json": {
+		Strategy: manifest.Link,
+		Source:   "/Users/test/dotfiles/claude/settings.json",
+	},
 }}
 
 func TestLoadWithoutAFileGivesAnEmptyState(t *testing.T) {

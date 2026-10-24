@@ -55,6 +55,17 @@ The host file exists because two Macs can have the same default name.
 - It deletes a path that left `own` only if state shows that Teire set it.
 - It does not create a target file that does not exist.
 
+`link` and `folder` replace a target without a question in two cases only:
+
+- The target is a link to the same file through another path, such as
+  `~/.dotfiles`.
+- The target is a plain file with the same bytes as the source.
+
+A target below a folder that links into the repository is a conflict, because
+a link made there would land in the repository itself. When an entry leaves the
+manifest, Teire removes its link only while the link still points where Teire
+made it point.
+
 ## State and conflicts
 
 The state of the last apply is in `$XDG_STATE_HOME/teire/state.json`, with one
