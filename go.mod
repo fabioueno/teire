@@ -8,8 +8,8 @@ require (
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.12.1
 	github.com/tailscale/hujson v0.0.0-20260727124030-b80ff77dac4f
-	github.com/tidwall/gjson v1.20.4
-	github.com/tidwall/sjson v1.2.10
+	github.com/tidwall/gjson v1.20.6
+	github.com/tidwall/sjson v1.2.11
 	golang.org/x/term v0.48.0
 )
 
